@@ -81,22 +81,22 @@
 			"revisionTime": "2017-10-05T18:33:27Z"
 		},
 		{
-			"checksumSHA1": "EUJPXC0f+Bt+kr+nJKVsF8c4J0w=",
+			"checksumSHA1": "pzKePdZ7+WOjdcVURFrg0cSxoO0=",
 			"path": "github.com/influx6/moz/ast",
-			"revision": "c3eb0329cd98ede7924c7e3530406caa1a59f7ec",
-			"revisionTime": "2017-12-15T21:11:19Z"
+			"revision": "57e1550b889062575282811bd2fbf6d468bb4954",
+			"revisionTime": "2017-12-15T21:18:11Z"
 		},
 		{
 			"checksumSHA1": "4BR/t0/KPfMRti8YCXaLvufebfE=",
 			"path": "github.com/influx6/moz/gen",
-			"revision": "c3eb0329cd98ede7924c7e3530406caa1a59f7ec",
-			"revisionTime": "2017-12-15T21:11:19Z"
+			"revision": "57e1550b889062575282811bd2fbf6d468bb4954",
+			"revisionTime": "2017-12-15T21:18:11Z"
 		},
 		{
 			"checksumSHA1": "ARrBZDGCJyd6GCFG+dlFCrgXi4Q=",
 			"path": "github.com/influx6/moz/gen/templates",
-			"revision": "c3eb0329cd98ede7924c7e3530406caa1a59f7ec",
-			"revisionTime": "2017-12-15T21:11:19Z"
+			"revision": "57e1550b889062575282811bd2fbf6d468bb4954",
+			"revisionTime": "2017-12-15T21:18:11Z"
 		},
 		{
 			"checksumSHA1": "sGC8yzCmU7CO6/Uy6TTWRgHpgLI=",
