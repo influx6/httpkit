@@ -31,9 +31,7 @@ JSON content to the HTTP API. This will in turn return a respective status code.
 
 - Expected Request Parameters
 
-```json
-    {
-    }
+```
 ```
 
 - Expected Request Body
@@ -69,10 +67,8 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 
 - Expected Request Parameters
 
-```json
-    {
-        :public_id
-    }
+```
+    :public_id
 ```
 
 - Expected Request Body
@@ -106,9 +102,7 @@ Get retrives all records of the {{.Struct.Object.Name}} type from the HTTP API.
 
 - Expected Request Parameters
 
-```json
-    {
-    }
+```
 ```
 
 - Expected Request Body
@@ -143,10 +137,8 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 
 - Expected Request Parameters
 
-```json
-    {
-        :public_id
-    }
+```
+    :public_id
 ```
 
 - Expected Request Body
@@ -182,10 +174,8 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 
 - Expected Request Parameters
 
-```json
-    {
-        :public_id
-    }
+```
+    :public_id
 ```
 
 - Expected Request Body
