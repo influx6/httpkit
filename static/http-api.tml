@@ -49,7 +49,7 @@ func (api *HTTPAPI) Create(ctx *httputil.Context) error {
 				"url": ctx.Request().URL.String(),
 		}))
 
-		var incoming {{.Struct.Package}}.{{.Struct.Object.Name}}
+		var incoming {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}
 
 		if err := json.NewDecoder(ctx.Body()).Decode(&incoming); err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to parse params and url.Values"),metrics.WithFields(metrics.Field{
@@ -118,7 +118,7 @@ func (api *HTTPAPI) Update(ctx *httputil.Context) error {
 	}
 
 
-		var incoming {{.Struct.Package}}.{{.Struct.Object.Name}}
+		var incoming {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}
 
 		if err := json.NewDecoder(ctx.Body()).Decode(&incoming); err != nil {
 		api.metrics.Emit(metrics.Errorf("Failed to decode request body"),metrics.WithFields(metrics.Field{
