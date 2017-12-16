@@ -23,7 +23,7 @@ func TestGetAll{{.Struct.Object.Name}}(t *testing.T){
 	tree := httputil.NewMuxRouter(nil)
 
 	// Register routes with router group.
-	register(tree, api, version, "{{toLower .Struct.Object.Name}}")
+	register(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
     elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
     if err != nil {
@@ -39,7 +39,7 @@ func TestGetAll{{.Struct.Object.Name}}(t *testing.T){
     }
     tests.Passed("Should have successfully saved {{.Struct.Object.Name}} record.")
 
-    req, err := http.NewRequest("GET", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}", version), nil)
+    req, err := http.NewRequest("GET", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}", version), nil)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
@@ -69,7 +69,7 @@ func TestGet{{.Struct.Object.Name}}(t *testing.T){
 	tree := httputil.NewMuxRouter(nil)
 
 	// Register routes with router group.
-	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name}}")
+	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
     elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
     if err != nil {
@@ -85,7 +85,7 @@ func TestGet{{.Struct.Object.Name}}(t *testing.T){
     }
     tests.Passed("Should have successfully saved {{.Struct.Object.Name}} record.")
 
-    req, err := http.NewRequest("GET", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}/%s", version, elem.PublicID), nil)
+    req, err := http.NewRequest("GET", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}/%s", version, elem.PublicID), nil)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
@@ -116,12 +116,12 @@ func Test{{.Struct.Object.Name}}Create(t *testing.T){
 	tree := httputil.NewMuxRouter(nil)
 
 	// Register routes with router group.
-	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name}}")
+	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
     var body bytes.Buffer
     body.WriteString({{lower .Struct.Object.Name.Name}}CreateJSON)
 
-    req, err := http.NewRequest("POST", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}", version), &body)
+    req, err := http.NewRequest("POST", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}", version), &body)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
@@ -151,12 +151,12 @@ func Test{{.Struct.Object.Name}}Update(t *testing.T){
 	tree := httputil.NewMuxRouter(nil)
 
 	// Register routes with router group.
-	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name}}")
+	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
     var body bytes.Buffer
     body.WriteString({{lower .Struct.Object.Name.Name}}CreateJSON)
 
-    req, err := http.NewRequest("POST", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}", version), &body)
+    req, err := http.NewRequest("POST", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}", version), &body)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
@@ -191,7 +191,7 @@ func Test{{.Struct.Object.Name}}Update(t *testing.T){
     }
     tests.Passed("Should have successfully encoded {{.Struct.Object.Name}}.")
 
-    req, err = http.NewRequest("PUT", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}/%s", version, elem.PublicID), &bu)
+    req, err = http.NewRequest("PUT", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}/%s", version, elem.PublicID), &bu)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
@@ -216,7 +216,7 @@ func Test{{.Struct.Object.Name}}Delete(t *testing.T){
 	tree := httputil.NewMuxRouter(nil)
 
 	// Register routes with router group.
-	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name}}")
+	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
 
     elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
@@ -233,7 +233,7 @@ func Test{{.Struct.Object.Name}}Delete(t *testing.T){
     }
     tests.Passed("Should have successfully saved {{.Struct.Object.Name}} record.")
 
-    req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name}}/%s", version, elem.PublicID), nil)
+    req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s/{{toLower .Struct.Object.Name.Name}}/%s", version, elem.PublicID), nil)
     if err != nil {
         tests.Failed("Should have successfully created request {{.Struct.Object.Name}} record : %+q.", err)
     }
