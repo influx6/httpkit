@@ -22,7 +22,7 @@ Running the following commands instantly generates all necessary files and packa
 
 You annotate any giving struct with `@httpapi` which marks giving struct has a target for code generation. 
 
-It also respects `@associates` annotation which gives extra information to the generator for the following data:
+It also respects attributes like `New` and `Update` on the `@httpapi` annotation, these two provide information to the generator for:
 
 1. What struct to be used as representing a new data for struct type.
 2. What struct contain information for representing the update data for struct type.
@@ -31,9 +31,7 @@ Sample below:
 
 ```go
 // User is a type defining the given user related fields for a given.
-//@httpapi
-//@associates(@httpapi, New, NewUser)
-//@associates(@httpapi, Update, UpdatedUser)
+//@httpapi(New => NewUser, Update => UpdatedUser)
 type User struct {
 	Username      string    `json:"username"`
 	PublicID      string    `json:"public_id"`
