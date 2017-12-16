@@ -1,5 +1,7 @@
 HTTPKit
 --------
+[![Go Report Card](https://goreportcard.com/badge/github.com/gokit/httpkit)](https://goreportcard.com/report/github.com/gokit/httpkit)
+
 HTTPKit implements a code generator which automatically generates go packages for a http CRUD implementations for annotated structs.
 
 ## Install
