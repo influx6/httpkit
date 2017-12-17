@@ -62,7 +62,7 @@ func (m *MockAPIOperator) Update(ctx context.Context, publicID string, elem {{.U
         return errors.New("Not found/invalid type")
     }
     
-    newElem, err := MockCU.Update{{.Struct.Object.Name}}(ctx, nowElem, elem)
+    newElem, err := update{{.Struct.Object.Name}}(ctx, nowElem, elem)
     if err != nil {
         return err
     }
@@ -79,7 +79,7 @@ func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Packa
     m.store.Store(elem.PublicID, elem)
     return elem, nil
 {{ else }}
-    newElem, err := MockCU.Create{{.Struct.Object.Name}}(ctx, elem)
+    newElem, err := create{{.Struct.Object.Name}}(ctx, elem)
     if err != nil {
         return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, err
     }
@@ -89,3 +89,25 @@ func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Packa
     return newElem, nil
 {{ end }}
 }
+
+{{ if (not .UpdateIsSimilar) }}
+// update{{.Struct.Object.Name}} updates a exiting {{.Struct.Package}}.{{.Struct.Object.Name}} record with the given update item.
+func Update{{.Struct.Object.Name}}(ctx context.Context, record {{.Struct.Package}}.{{.Struct.Object.Name}}, updater {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
+    
+    // TODO(developer):
+    // Override function contents with what should happen.
+
+    return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, errors.New("Not Implemented")
+}
+{{end}}
+
+{{ if (not .CreateIsSimilar) }}
+// create{{.Struct.Object.Name}} creates a new {{.Struct.Package}}.{{.Struct.Object.Name}} record from the given create type.
+func create{{.Struct.Object.Name}}(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error) {
+
+    // TODO(developer):
+    // Override function contents with what should happen.
+
+    return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, errors.New("Not Implemented")
+}
+{{end}}

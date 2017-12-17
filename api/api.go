@@ -261,65 +261,22 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 		),
 	)
 
-	httpMockHelperGen := gen.Block(
-		gen.Package(
-			gen.Name(fmt.Sprintf("%s_test", packageName)),
-			gen.Imports(
-				gen.Import("errors", ""),
-				gen.Import("testing", ""),
-				gen.Import("encoding/json", ""),
-				gen.Import("github.com/influx6/faux/tests", ""),
-				gen.Import("github.com/influx6/faux/metrics", ""),
-				gen.Import("github.com/influx6/faux/context", ""),
-				gen.Import("github.com/influx6/faux/metrics/custom", ""),
-				gen.Import(str.Path, ""),
-			),
-			gen.Block(
-				gen.SourceTextWith(
-					string(static.MustReadFile("http-api-mock-functions.tml", true)),
-					template.FuncMap{
-						"map":       ast.MapOutFields,
-						"mapValues": ast.MapOutValues,
-						"hasFunc":   ast.HasFunctionFor(pkgDeclr),
-					},
-					struct {
-						Pkg             *ast.PackageDeclaration
-						Struct          ast.StructDeclaration
-						CreateAction    ast.StructDeclaration
-						UpdateAction    ast.StructDeclaration
-						CreateIsSimilar bool
-						UpdateIsSimilar bool
-					}{
-						Pkg:             &pkgDeclr,
-						Struct:          str,
-						CreateAction:    createAction,
-						UpdateAction:    updateAction,
-						CreateIsSimilar: isSameCreate,
-						UpdateIsSimilar: isSameUpdate,
-					},
-				),
-			),
-		),
-	)
-
 	writers := []gen.WriteDirective{
 		{
 			Writer:   httpReadmeGen,
 			FileName: "readme.md",
 			Dir:      packageName,
-			// DontOverride: true,
 		},
 		{
-			Writer:   fmtwriter.New(httpMockGen, true, true),
-			FileName: fmt.Sprintf("%s_mock_test.go", packageName),
-			Dir:      packageName,
-			// DontOverride: true,
+			Writer:       fmtwriter.New(httpMockGen, true, true),
+			FileName:     fmt.Sprintf("%s_mock_test.go", packageName),
+			Dir:          packageName,
+			DontOverride: true,
 		},
 		{
 			Writer:   fmtwriter.New(httpTestGen, true, true),
 			FileName: fmt.Sprintf("%s_test.go", packageName),
 			Dir:      packageName,
-			// DontOverride: true,
 		},
 		{
 			Writer:       fmtwriter.New(httpJSONGen, true, true),
@@ -331,17 +288,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 			Writer:   fmtwriter.New(httpGen, true, true),
 			FileName: fmt.Sprintf("%s.go", packageName),
 			Dir:      packageName,
-			// DontOverride: true,
 		},
-	}
-
-	if !isSameCreate || !isSameUpdate {
-		writers = append(writers, gen.WriteDirective{
-			Writer:       fmtwriter.New(httpMockHelperGen, true, true),
-			FileName:     fmt.Sprintf("%s_create_update_mock_test.go", packageName),
-			Dir:          packageName,
-			DontOverride: true,
-		})
 	}
 
 	return writers, nil
