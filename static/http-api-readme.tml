@@ -1,6 +1,8 @@
 {{.Struct.Object.Name}} HTTP API 
 ===============================
 
+[![Go Report Card](https://goreportcard.com/badge/{{.PackagePath}})](https://goreportcard.com/report/{{.PackagePath}})
+
 {{.Struct.Object.Name}} HTTP API is a auto generated http api for the struct `{{.Struct.Object.Name.Name}}`.
 
 The API expects the user to implement and provide the backend interface to provided underline db interaction:

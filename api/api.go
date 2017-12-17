@@ -44,6 +44,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 	}
 
 	packageName := fmt.Sprintf("%sapi", strings.ToLower(str.Object.Name.Name))
+	packageFinalPath := filepath.Join(str.Path, toDir, packageName)
 	var hasPublicID bool
 
 	// Validate we have a `PublicID` field.
@@ -101,7 +102,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 						"map":       ast.MapOutFields,
 						"mapValues": ast.MapOutValues,
 						"mapJSON":   ast.MapOutFieldsToJSON,
-						"hasFunc":   ast.HasFunctionFor(pkgDeclr),
+						"hasFunc":   pkgDeclr.HasFunctionFor,
 					},
 					struct {
 						Pkg          *ast.PackageDeclaration
@@ -127,14 +128,18 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 					"map":       ast.MapOutFields,
 					"mapValues": ast.MapOutValues,
 					"mapJSON":   ast.MapOutFieldsToJSON,
-					"hasFunc":   ast.HasFunctionFor(pkgDeclr),
+					"hasFunc":   pkgDeclr.HasFunctionFor,
 				},
 				struct {
 					Pkg          *ast.PackageDeclaration
 					Struct       ast.StructDeclaration
 					CreateAction ast.StructDeclaration
 					UpdateAction ast.StructDeclaration
+					PackageName  string
+					PackagePath  string
 				}{
+					PackagePath:  packageFinalPath,
+					PackageName:  packageName,
 					Pkg:          &pkgDeclr,
 					Struct:       str,
 					CreateAction: createAction,
@@ -158,7 +163,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 						"map":       ast.MapOutFields,
 						"mapValues": ast.MapOutValues,
 						"mapJSON":   ast.MapOutFieldsToJSON,
-						"hasFunc":   ast.HasFunctionFor(pkgDeclr),
+						"hasFunc":   pkgDeclr.HasFunctionFor,
 					},
 					struct {
 						Pkg          *ast.PackageDeclaration
@@ -200,7 +205,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 					template.FuncMap{
 						"map":       ast.MapOutFields,
 						"mapValues": ast.MapOutValues,
-						"hasFunc":   ast.HasFunctionFor(pkgDeclr),
+						"hasFunc":   pkgDeclr.HasFunctionFor,
 						"randField": ast.RandomFieldAssign,
 					},
 					struct {
@@ -239,7 +244,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 					template.FuncMap{
 						"map":       ast.MapOutFields,
 						"mapValues": ast.MapOutValues,
-						"hasFunc":   ast.HasFunctionFor(pkgDeclr),
+						"hasFunc":   pkgDeclr.HasFunctionFor,
 					},
 					struct {
 						Pkg             *ast.PackageDeclaration
