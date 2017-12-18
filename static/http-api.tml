@@ -8,6 +8,14 @@ type Backend interface{
 		Create(context.Context, {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error)
 }
 
+// {{.Struct.Object.Name.Name}}HTTP defines an interface which expose the methods provided by the http backend.
+type {{.Struct.Object.Name.Name}}HTTP interface{
+	Create(*httputil.Context) error
+	Update(*httputil.Context) error
+	Delete(*httputil.Context) error
+	GetAll(*httputil.Context) error
+}
+
 // {{.Struct.Object.Name}}Records defines a type to represent the response given to a request for
 // all records of the type {{.Struct.Package}}.{{.Struct.Object.Name}}.
 type {{.Struct.Object.Name}}Records struct {
