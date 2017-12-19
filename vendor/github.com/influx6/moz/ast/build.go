@@ -536,6 +536,7 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 
 				defFunc.Comments = comment
 				defFunc.Source = string(source)
+				defFunc.TypeDeclr = declr
 				defFunc.FuncDeclr = rdeclr
 				defFunc.Type = rdeclr.Type
 				defFunc.Position = rdeclr.Pos()
@@ -560,21 +561,28 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 					defFunc.FuncType = rdeclr.Recv
 
 					nameIdent := rdeclr.Recv.List[0]
+					var receiverNameType *ast.Ident
 
-					if receiverNameType, ok := nameIdent.Type.(*ast.Ident); ok {
-						defFunc.RecieverName = receiverNameType.Name
-						defFunc.Reciever = receiverNameType.Obj
-						defFunc.RecieverIdent = receiverNameType
-
-						if rems, ok := packageDeclr.ObjectFunc[receiverNameType.Obj]; ok {
-							rems = append(rems, defFunc)
-							packageDeclr.ObjectFunc[receiverNameType.Obj] = rems
-						} else {
-							packageDeclr.ObjectFunc[receiverNameType.Obj] = []FuncDeclaration{defFunc}
-						}
-
-						continue declrLoop
+					switch nmi := nameIdent.Type.(type) {
+					case *ast.Ident:
+						receiverNameType = nmi
+					case *ast.StarExpr:
+						receiverNameType = nmi.X.(*ast.Ident)
+						defFunc.RecieverPointer = nmi
 					}
+
+					defFunc.Reciever = receiverNameType.Obj
+					defFunc.RecieverIdent = receiverNameType
+					defFunc.RecieverName = receiverNameType.Name
+
+					if rems, ok := packageDeclr.ObjectFunc[receiverNameType.Obj]; ok {
+						rems = append(rems, defFunc)
+						packageDeclr.ObjectFunc[receiverNameType.Obj] = rems
+					} else {
+						packageDeclr.ObjectFunc[receiverNameType.Obj] = []FuncDeclaration{defFunc}
+					}
+
+					continue declrLoop
 				}
 
 				packageDeclr.Functions = append(packageDeclr.Functions, defFunc)
@@ -631,6 +639,21 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 						// i.e Spec:
 						// &ast.ValueSpec{Doc:(*ast.CommentGroup)(nil), Names:[]*ast.Ident{(*ast.Ident)(0xc4200e4a00)}, Type:ast.Expr(nil), Values:[]ast.Expr{(*ast.BasicLit)(0xc4200e4a20)}, Comment:(*ast.CommentGroup)(nil)}
 						// &ast.ValueSpec{Doc:(*ast.CommentGroup)(nil), Names:[]*ast.Ident{(*ast.Ident)(0xc4200e4a40)}, Type:(*ast.Ident)(0xc4200e4a60), Values:[]ast.Expr(nil), Comment:(*ast.CommentGroup)(nil)}
+						packageDeclr.Variables = append(packageDeclr.Variables, VariableDeclaration{
+							Object:       obj,
+							Annotations:  annotations,
+							Associations: associations,
+							GenObj:       rdeclr,
+							Source:       string(source),
+							Comments:     comment,
+							Declr:        &packageDeclr,
+							File:         packageDeclr.File,
+							Package:      packageDeclr.Package,
+							Path:         packageDeclr.Path,
+							FilePath:     packageDeclr.FilePath,
+							From:         beginPosition.Offset,
+							Length:       positionLength,
+						})
 
 					case *ast.TypeSpec:
 
@@ -647,6 +670,7 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 								Struct:       robj,
 								Annotations:  annotations,
 								Associations: associations,
+								GenObj:       rdeclr,
 								Source:       string(source),
 								Comments:     comment,
 								Declr:        &packageDeclr,
@@ -657,7 +681,6 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 								From:         beginPosition.Offset,
 								Length:       positionLength,
 							})
-							break
 
 						case *ast.InterfaceType:
 							log.Emit(metrics.Info("Annotation in Decleration"),
@@ -668,6 +691,7 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 							packageDeclr.Interfaces = append(packageDeclr.Interfaces, InterfaceDeclaration{
 								Object:       obj,
 								Interface:    robj,
+								GenObj:       rdeclr,
 								Comments:     comment,
 								Annotations:  annotations,
 								Associations: associations,
@@ -680,7 +704,6 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 								From:         beginPosition.Offset,
 								Length:       positionLength,
 							})
-							break
 
 						default:
 							log.Emit(metrics.Info("Annotation in Decleration"),
@@ -691,6 +714,7 @@ func parseFileToPackage(log metrics.Metrics, dir string, path string, pkgName st
 
 							packageDeclr.Types = append(packageDeclr.Types, TypeDeclaration{
 								Object:       obj,
+								GenObj:       rdeclr,
 								Annotations:  annotations,
 								Comments:     comment,
 								Associations: associations,
@@ -980,7 +1004,7 @@ func ParsePackage(toDir string, log metrics.Metrics, provider *AnnotationRegistr
 		if err != nil {
 			log.Emit(metrics.Error(fmt.Errorf("ParseFailure: Package %q", pkg.Package)),
 				metrics.With("error", err.Error()), metrics.With("package", pkg.Package))
-			continue
+			return err
 		}
 
 		log.Emit(metrics.Info("ParseSuccess"), metrics.With("From", pkg.FilePath), metrics.With("package", pkg.Package), metrics.With("Directives", len(wdrs)))
@@ -991,7 +1015,7 @@ func ParsePackage(toDir string, log metrics.Metrics, provider *AnnotationRegistr
 					metrics.With("dir", toDir),
 					metrics.With("package", pkg.Package),
 					metrics.With("file", pkg.File))
-				continue
+				return err
 			}
 
 			log.Emit(metrics.Info("Annotation Resolved"), metrics.With("annotation", wd.Annotation),
@@ -1021,7 +1045,7 @@ func SimplyParsePackage(toDir string, log metrics.Metrics, provider *AnnotationR
 		if err != nil {
 			log.Emit(metrics.Error(fmt.Errorf("ParseFailure: Package %q", pkg.Package)),
 				metrics.With("error", err.Error()), metrics.With("package", pkg.Package))
-			continue
+			return err
 		}
 
 		log.Emit(metrics.Info("ParseSuccess"), metrics.With("From", pkg.FilePath), metrics.With("package", pkg.Package), metrics.With("Directives", len(wdrs)))
@@ -1032,7 +1056,7 @@ func SimplyParsePackage(toDir string, log metrics.Metrics, provider *AnnotationR
 					metrics.With("dir", toDir),
 					metrics.With("package", pkg.Package),
 					metrics.With("file", pkg.File))
-				continue
+				return err
 			}
 
 			log.Emit(metrics.Info("Annotation Resolved"), metrics.With("annotation", wd.Annotation),
