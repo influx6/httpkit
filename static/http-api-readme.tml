@@ -25,18 +25,11 @@ It exposes the following methods for each endpoint:
 Create receives the provided record of the {{.CreateAction.Object.Name}} type which is delieved the 
 JSON content to the HTTP API. This will in turn return a respective status code.
 
-- Expected Content Type: 
+- Expected Request Body
 
 ```http
     Content-Type: application/json
 ```
-
-- Expected Request Parameters
-
-```
-```
-
-- Expected Request Body
 
 ```json
 {{ mapRandomJSON .CreateAction "bson" "json" }}
@@ -51,6 +44,10 @@ Success: 201
 
 - Expected Response Body
 
+```http
+    Content-Type: application/json
+```
+
 ```json
 {{ mapRandomJSON .Struct "bson" "json" }}
 ```
@@ -61,21 +58,10 @@ Success: 201
 Get retrives a giving record of the {{.Struct.Object.Name}} type from the HTTP API returning received result as a JSON
 response. It uses the provided `:public_id` parameter as the paramter to identify the record.
 
-- Expected Content Type: 
-
-```http
-    Content-Type: application/json
-```
-
 - Expected Request Parameters
 
 ```
     :public_id
-```
-
-- Expected Request Body
-
-```json
 ```
 
 - Expected Status Code
@@ -86,6 +72,10 @@ Success: 200
 ```
 
 - Expected Response Body
+
+```http
+    Content-Type: application/json
+```
 
 ```json
 {{ mapRandomJSON .Struct "bson" "json" }}
@@ -96,22 +86,6 @@ Success: 200
 
 Get retrives all records of the {{.Struct.Object.Name}} type from the HTTP API.
 
-- Expected Content Type: 
-
-```http
-    Content-Type: application/json
-```
-
-- Expected Request Parameters
-
-```
-```
-
-- Expected Request Body
-
-```json
-```
-
 - Expected Status Code
 
 ```
@@ -121,8 +95,12 @@ Success: 200
 
 - Expected Response Body
 
+```http
+    Content-Type: application/json
+```
+
 ```json
-[{{ mapRandomJSON .Struct "bson" "json" }}]
+[{{ mapRandomJSON .Struct "bson" "json" }},{{ mapRandomJSON .Struct "bson" "json" }}]
 ```
 
 ## PUT /{{.Struct.Object.Name}}/:public_id
@@ -131,12 +109,6 @@ Success: 200
 Update attempts to update a giving record of the {{.Struct.Object.Name}} type from the HTTP API returning received result as a JSON
 response. It uses the provided `:public_id` parameter as the paramter to identify the record with the provided JSON request body.
 
-- Expected Content Type: 
-
-```http
-    Content-Type: application/json
-```
-
 - Expected Request Parameters
 
 ```
@@ -144,6 +116,10 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 ```
 
 - Expected Request Body
+
+```http
+    Content-Type: application/json
+```
 
 ```json
 {{ mapRandomJSON .UpdateAction "bson" "json" }}
@@ -156,33 +132,16 @@ Failure: 500
 Success: 204
 ```
 
-
-- Expected Response Body
-
-```json
-```
-
 ## DELETE /{{.Struct.Object.Name}}/:public_id
 ### Method: `func (api *HTTPAPI) Delete(ctx *httputil.Context) error`
 
 Get deletes a giving record of the {{.Struct.Object.Name}} type from the HTTP API returning received result as a JSON
 response. It uses the provided `:public_id` parameter as the paramter to identify the record.
 
-- Expected Content Type: 
-
-```http
-    Content-Type: application/json
-```
-
 - Expected Request Parameters
 
 ```
     :public_id
-```
-
-- Expected Request Body
-
-```json
 ```
 
 - Expected Status Code
@@ -192,7 +151,3 @@ Failure: 500
 Success: 204
 ```
 
-- Expected Response Body
-
-```json
-```
