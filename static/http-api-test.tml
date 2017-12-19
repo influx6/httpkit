@@ -25,7 +25,7 @@ func TestGetAll{{.Struct.Object.Name}}(t *testing.T){
 	// Register routes with router group.
 	register(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
-    elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
+    elem, err := LoadCreateJSON({{lower .Struct.Object.Name.Name}}CreateJSON)
     if err != nil {
         tests.Failed("Should have successfully loaded JSON: {{lower .Struct.Object.Name.Name}}CreateJSON : %+q.", err)
     }
@@ -71,7 +71,7 @@ func TestGet{{.Struct.Object.Name}}(t *testing.T){
 	// Register routes with router group.
 	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
-    elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
+    elem, err := LoadCreateJSON({{lower .Struct.Object.Name.Name}}CreateJSON)
     if err != nil {
         tests.Failed("Should have successfully loaded JSON: {{lower .Struct.Object.Name.Name}}CreateJSON : %+q.", err)
     }
@@ -176,7 +176,7 @@ func Test{{.Struct.Object.Name}}Update(t *testing.T){
     }
     tests.Passed("Should have successfully received response body.")
 
-    elem, err := loadJSONFor(res.Body.String())
+    elem, err := LoadUpdateJSON(res.Body.String())
     if err != nil {
         tests.Failed("Should have successfully loaded JSON:  %+q.", err)
     }
@@ -219,7 +219,7 @@ func Test{{.Struct.Object.Name}}Delete(t *testing.T){
 	registerRoute(tree, api, version, "{{toLower .Struct.Object.Name.Name}}")
 
 
-    elem, err := loadJSONFor({{lower .Struct.Object.Name.Name}}CreateJSON)
+    elem, err := LoadCreateJSON({{lower .Struct.Object.Name.Name}}CreateJSON)
     if err != nil {
         tests.Failed("Should have successfully loaded JSON: {{lower .Struct.Object.Name.Name}}CreateJSON : %+q.", err)
     }
