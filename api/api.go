@@ -99,10 +99,11 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 				gen.SourceTextWith(
 					string(static.MustReadFile("http-api.tml", true)),
 					template.FuncMap{
-						"map":       ast.MapOutFields,
-						"mapValues": ast.MapOutValues,
-						"mapJSON":   ast.MapOutFieldsToJSON,
-						"hasFunc":   pkgDeclr.HasFunctionFor,
+						"map":           ast.MapOutFields,
+						"mapValues":     ast.MapOutValues,
+						"mapJSON":       ast.MapOutFieldsToJSON,
+						"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+						"hasFunc":       pkgDeclr.HasFunctionFor,
 					},
 					struct {
 						Pkg          *ast.PackageDeclaration
@@ -125,10 +126,11 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 			gen.SourceTextWith(
 				string(static.MustReadFile("http-api-readme.tml", true)),
 				template.FuncMap{
-					"map":       ast.MapOutFields,
-					"mapValues": ast.MapOutValues,
-					"mapJSON":   ast.MapOutFieldsToJSON,
-					"hasFunc":   pkgDeclr.HasFunctionFor,
+					"map":           ast.MapOutFields,
+					"mapValues":     ast.MapOutValues,
+					"mapJSON":       ast.MapOutFieldsToJSON,
+					"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+					"hasFunc":       pkgDeclr.HasFunctionFor,
 				},
 				struct {
 					Pkg          *ast.PackageDeclaration
@@ -160,10 +162,11 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 				gen.SourceTextWith(
 					string(static.MustReadFile("http-api-json.tml", true)),
 					template.FuncMap{
-						"map":       ast.MapOutFields,
-						"mapValues": ast.MapOutValues,
-						"mapJSON":   ast.MapOutFieldsToJSON,
-						"hasFunc":   pkgDeclr.HasFunctionFor,
+						"map":           ast.MapOutFields,
+						"mapValues":     ast.MapOutValues,
+						"mapJSON":       ast.MapOutFieldsToJSON,
+						"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+						"hasFunc":       pkgDeclr.HasFunctionFor,
 					},
 					struct {
 						Pkg          *ast.PackageDeclaration

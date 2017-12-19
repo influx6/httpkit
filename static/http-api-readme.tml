@@ -39,7 +39,7 @@ JSON content to the HTTP API. This will in turn return a respective status code.
 - Expected Request Body
 
 ```json
-{{ mapJSON .CreateAction "bson" "json" }}
+{{ mapRandomJSON .CreateAction "bson" "json" }}
 ```
 
 - Expected Status Code
@@ -52,7 +52,7 @@ Success: 201
 - Expected Response Body
 
 ```json
-{{ mapJSON .Struct "bson" "json" }}
+{{ mapRandomJSON .Struct "bson" "json" }}
 ```
 
 ## GET /{{.Struct.Object.Name}}/:public_id
@@ -88,7 +88,7 @@ Success: 200
 - Expected Response Body
 
 ```json
-{{ mapJSON .CreateAction "bson" "json" }}
+{{ mapRandomJSON .CreateAction "bson" "json" }}
 ```
 
 ## GET /{{.Struct.Object.Name}}/
@@ -122,7 +122,7 @@ Success: 200
 - Expected Response Body
 
 ```json
-[{{ mapJSON .CreateAction "bson" "json" }}]
+[{{ mapRandomJSON .CreateAction "bson" "json" }}]
 ```
 
 ## PUT /{{.Struct.Object.Name}}/:public_id
@@ -146,7 +146,7 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 - Expected Request Body
 
 ```json
-{{ mapJSON .UpdateAction "bson" "json" }}
+{{ mapRandomJSON .UpdateAction "bson" "json" }}
 ```
 
 - Expected Status Code

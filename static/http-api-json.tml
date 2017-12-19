@@ -1,11 +1,11 @@
 
 // json fixtures ...
 var (
- {{.Struct.Object.Name.Name}}JSON = `{{ mapJSON .Struct "json" "" }}`
+ {{.Struct.Object.Name.Name}}JSON = `{{ mapRandomJSON .Struct "json" "" }}`
 
- {{.Struct.Object.Name.Name}}CreateJSON = `{{ mapJSON .CreateAction "json" "" }}`
+ {{.Struct.Object.Name.Name}}CreateJSON = `{{ mapRandomJSON .CreateAction "json" "" }}`
 
- {{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapJSON .UpdateAction "json" "" }}`
+ {{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapRandomJSON .UpdateAction "json" "" }}`
 )
 
 // LoadCreateJSON returns a new instance of a {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}.

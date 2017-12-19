@@ -34,7 +34,7 @@ func main() {
 				return err
 			}
 
-			currentdir = filepath.Join(currentdir,target)
+			currentdir = filepath.Join(currentdir, target)
 
 			generators := ast.NewAnnotationRegistryWith(logs)
 			generators.Register("httpapi", api.HTTPGen)
