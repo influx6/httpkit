@@ -11,6 +11,7 @@ type {{.Struct.Object.Name.Name}}Backend interface{
 
 // {{.Struct.Object.Name.Name}}HTTP defines an interface which expose the methods provided by the http backend.
 type {{.Struct.Object.Name.Name}}HTTP interface{
+	Get(*httputil.Context) error
 	Create(*httputil.Context) error
 	Update(*httputil.Context) error
 	Delete(*httputil.Context) error
