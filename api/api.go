@@ -18,16 +18,16 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 	updateAction := str
 	createAction := str
 
-	var (
-		isSameCreate = true
-		isSameUpdate = true
-	)
+	//var (
+	//	isSameCreate = true
+	//	isSameUpdate = true
+	//)
 
 	if newActionName := an.Param("New"); newActionName != "" {
 		if action, err := ast.FindStructType(pkgDeclr, newActionName); err == nil && action.Declr != nil {
-			if action.Object != str.Object {
-				isSameCreate = false
-			}
+			//if action.Object != str.Object {
+			//	isSameCreate = false
+			//}
 
 			createAction = action
 		}
@@ -35,9 +35,9 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 
 	if updateActionName := an.Param("Update"); updateActionName != "" {
 		if action, err := ast.FindStructType(pkgDeclr, updateActionName); err == nil && action.Declr != nil {
-			if action.Object != str.Object {
-				isSameUpdate = false
-			}
+			//if action.Object != str.Object {
+			//	isSameUpdate = false
+			//}
 
 			updateAction = action
 		}
@@ -151,7 +151,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 
 	httpJSONGen := gen.Block(
 		gen.Package(
-			gen.Name(fmt.Sprintf("%s_test", packageName)),
+			gen.Name("fixtures"),
 			gen.Imports(
 				gen.Import("encoding/json", ""),
 				gen.Import(str.Path, ""),
@@ -181,91 +181,91 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 		),
 	)
 
-	httpTestGen := gen.Block(
-		gen.Package(
-			gen.Name(fmt.Sprintf("%s_test", packageName)),
-			gen.Imports(
-				gen.Import("fmt", ""),
-				gen.Import("bytes", ""),
-				gen.Import("testing", ""),
-				gen.Import("encoding/json", ""),
-				gen.Import("net/http", ""),
-				gen.Import("net/http/httptest", ""),
-				gen.Import("github.com/influx6/faux/httputil", ""),
-				gen.Import("github.com/dimfeld/httptreemux", ""),
-				gen.Import("github.com/influx6/faux/tests", ""),
-				gen.Import("github.com/influx6/faux/metrics", ""),
-				gen.Import("github.com/influx6/faux/context", ""),
-				gen.Import("github.com/influx6/faux/metrics/custom", ""),
-				gen.Import(filepath.Join(str.Path, toDir, packageName), "httpapi"),
-				gen.Import(str.Path, ""),
-			),
-			gen.Block(
-				gen.SourceTextWith(
-					string(static.MustReadFile("http-api-test.tml", true)),
-					template.FuncMap{
-						"map":       ast.MapOutFields,
-						"mapValues": ast.MapOutValues,
-						"hasFunc":   pkgDeclr.HasFunctionFor,
-						"randField": ast.RandomFieldAssign,
-					},
-					struct {
-						Pkg          *ast.PackageDeclaration
-						Struct       ast.StructDeclaration
-						CreateAction ast.StructDeclaration
-						UpdateAction ast.StructDeclaration
-					}{
-						Pkg:          &pkgDeclr,
-						Struct:       str,
-						CreateAction: createAction,
-						UpdateAction: updateAction,
-					},
-				),
-			),
-		),
-	)
+	//httpTestGen := gen.Block(
+	//	gen.Package(
+	//		gen.Name(fmt.Sprintf("%s_test", packageName)),
+	//		gen.Imports(
+	//			gen.Import("fmt", ""),
+	//			gen.Import("bytes", ""),
+	//			gen.Import("testing", ""),
+	//			gen.Import("encoding/json", ""),
+	//			gen.Import("net/http", ""),
+	//			gen.Import("net/http/httptest", ""),
+	//			gen.Import("github.com/influx6/faux/httputil", ""),
+	//			gen.Import("github.com/dimfeld/httptreemux", ""),
+	//			gen.Import("github.com/influx6/faux/tests", ""),
+	//			gen.Import("github.com/influx6/faux/metrics", ""),
+	//			gen.Import("github.com/influx6/faux/context", ""),
+	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
+	//			gen.Import(filepath.Join(str.Path, toDir, packageName), "httpapi"),
+	//			gen.Import(str.Path, ""),
+	//		),
+	//		gen.Block(
+	//			gen.SourceTextWith(
+	//				string(static.MustReadFile("http-api-test.tml", true)),
+	//				template.FuncMap{
+	//					"map":       ast.MapOutFields,
+	//					"mapValues": ast.MapOutValues,
+	//					"hasFunc":   pkgDeclr.HasFunctionFor,
+	//					"randField": ast.RandomFieldAssign,
+	//				},
+	//				struct {
+	//					Pkg          *ast.PackageDeclaration
+	//					Struct       ast.StructDeclaration
+	//					CreateAction ast.StructDeclaration
+	//					UpdateAction ast.StructDeclaration
+	//				}{
+	//					Pkg:          &pkgDeclr,
+	//					Struct:       str,
+	//					CreateAction: createAction,
+	//					UpdateAction: updateAction,
+	//				},
+	//			),
+	//		),
+	//	),
+	//)
 
-	httpMockGen := gen.Block(
-		gen.Package(
-			gen.Name(fmt.Sprintf("%s_test", packageName)),
-			gen.Imports(
-				gen.Import("errors", ""),
-				gen.Import("testing", ""),
-				gen.Import("encoding/json", ""),
-				gen.Import("golang.org/x/sync/syncmap", ""),
-				gen.Import("github.com/influx6/faux/tests", ""),
-				gen.Import("github.com/influx6/faux/metrics", ""),
-				gen.Import("github.com/influx6/faux/context", ""),
-				gen.Import("github.com/influx6/faux/metrics/custom", ""),
-				gen.Import(str.Path, ""),
-			),
-			gen.Block(
-				gen.SourceTextWith(
-					string(static.MustReadFile("http-api-mock.tml", true)),
-					template.FuncMap{
-						"map":       ast.MapOutFields,
-						"mapValues": ast.MapOutValues,
-						"hasFunc":   pkgDeclr.HasFunctionFor,
-					},
-					struct {
-						Pkg             *ast.PackageDeclaration
-						Struct          ast.StructDeclaration
-						CreateAction    ast.StructDeclaration
-						UpdateAction    ast.StructDeclaration
-						CreateIsSimilar bool
-						UpdateIsSimilar bool
-					}{
-						Pkg:             &pkgDeclr,
-						Struct:          str,
-						CreateAction:    createAction,
-						UpdateAction:    updateAction,
-						CreateIsSimilar: isSameCreate,
-						UpdateIsSimilar: isSameUpdate,
-					},
-				),
-			),
-		),
-	)
+	//httpMockGen := gen.Block(
+	//	gen.Package(
+	//		gen.Name("fixtures"),
+	//		gen.Imports(
+	//			gen.Import("errors", ""),
+	//			gen.Import("testing", ""),
+	//			gen.Import("encoding/json", ""),
+	//			gen.Import("golang.org/x/sync/syncmap", ""),
+	//			gen.Import("github.com/influx6/faux/tests", ""),
+	//			gen.Import("github.com/influx6/faux/metrics", ""),
+	//			gen.Import("github.com/influx6/faux/context", ""),
+	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
+	//			gen.Import(str.Path, ""),
+	//		),
+	//		gen.Block(
+	//			gen.SourceTextWith(
+	//				string(static.MustReadFile("http-api-mock.tml", true)),
+	//				template.FuncMap{
+	//					"map":       ast.MapOutFields,
+	//					"mapValues": ast.MapOutValues,
+	//					"hasFunc":   pkgDeclr.HasFunctionFor,
+	//				},
+	//				struct {
+	//					Pkg             *ast.PackageDeclaration
+	//					Struct          ast.StructDeclaration
+	//					CreateAction    ast.StructDeclaration
+	//					UpdateAction    ast.StructDeclaration
+	//					CreateIsSimilar bool
+	//					UpdateIsSimilar bool
+	//				}{
+	//					Pkg:             &pkgDeclr,
+	//					Struct:          str,
+	//					CreateAction:    createAction,
+	//					UpdateAction:    updateAction,
+	//					CreateIsSimilar: isSameCreate,
+	//					UpdateIsSimilar: isSameUpdate,
+	//				},
+	//			),
+	//		),
+	//	),
+	//)
 
 	writers := []gen.WriteDirective{
 		{
@@ -273,21 +273,21 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 			FileName: "readme.md",
 			Dir:      packageName,
 		},
-		{
-			Writer:       fmtwriter.New(httpMockGen, true, true),
-			FileName:     fmt.Sprintf("%s_mock_test.go", packageName),
-			Dir:          packageName,
-			DontOverride: true,
-		},
-		{
-			Writer:   fmtwriter.New(httpTestGen, true, true),
-			FileName: fmt.Sprintf("%s_test.go", packageName),
-			Dir:      packageName,
-		},
+		//{
+		//	Writer:       fmtwriter.New(httpMockGen, true, true),
+		//	FileName:     fmt.Sprintf("%s_mock_test.go", packageName),
+		//	Dir:          packageName,
+		//	DontOverride: true,
+		//},
+		//{
+		//	Writer:   fmtwriter.New(httpTestGen, true, true),
+		//	FileName: fmt.Sprintf("%s_test.go", packageName),
+		//	Dir:      packageName,
+		//},
 		{
 			Writer:       fmtwriter.New(httpJSONGen, true, true),
-			FileName:     fmt.Sprintf("%s_fixtures_test.go", packageName),
-			Dir:          packageName,
+			FileName:     fmt.Sprintf("%s_fixtures.go", packageName),
+			Dir:          filepath.Join(packageName, "fixtures"),
 			DontOverride: true,
 		},
 		{

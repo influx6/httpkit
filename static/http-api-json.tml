@@ -1,8 +1,12 @@
-var {{lower .Struct.Object.Name.Name}}JSON = `{{ mapJSON .Struct "json" "" }}`
 
-var {{lower .Struct.Object.Name.Name}}CreateJSON = `{{ mapJSON .CreateAction "json" "" }}`
+// json fixtures ...
+var (
+ {{.Struct.Object.Name.Name}}JSON = `{{ mapJSON .Struct "json" "" }}`
 
-var {{lower .Struct.Object.Name.Name}}UpdateJSON = `{{ mapJSON .UpdateAction "json" "" }}`
+ {{.Struct.Object.Name.Name}}CreateJSON = `{{ mapJSON .CreateAction "json" "" }}`
+
+ {{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapJSON .UpdateAction "json" "" }}`
+)
 
 // LoadCreateJSON returns a new instance of a {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}.
 func LoadCreateJSON(content string) ({{.CreateAction.Package}}.{{.CreateAction.Object.Name}}, error) {
