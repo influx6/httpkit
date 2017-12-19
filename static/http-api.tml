@@ -29,16 +29,16 @@ type {{.Struct.Object.Name.Name}}Records struct {
 // HTTPAPI defines a struct which holds the http api handlers for providing CRUD
 // operations for the provided {{quote .Struct.Object.Name.Name}} type.
 type HTTPAPI struct{
-		operator Backend
 		metrics metrics.Metrics
+		operator {{.Struct.Object.Name.Name}}Backend
 }
 
 // New returns a new HTTPAPI instance using the provided operator and
 // metric.
-func New(m metrics.Metrics, operator Backend) *HTTPAPI {
+func New(m metrics.Metrics, backend {{.Struct.Object.Name.Name}}Backend) *HTTPAPI {
 		return &HTTPAPI{
-				operator: operator,
 				metrics: m,
+				operator: backend,
 		}
 }
 
