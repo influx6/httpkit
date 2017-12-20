@@ -14,7 +14,7 @@ import (
 )
 
 // HTTPGen generates http crud for giving struct declaration.
-func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclaration, pkgDeclr ast.PackageDeclaration, pkg ast.Package) ([]gen.WriteDirective, error) {
+func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDeclaration, pkgDeclr ast.PackageDeclaration, pkg ast.Package) ([]gen.WriteDirective, error) {
 	updateAction := str
 	createAction := str
 
@@ -44,7 +44,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 	}
 
 	packageName := fmt.Sprintf("%sapi", strings.ToLower(str.Object.Name.Name))
-	packageFinalPath := filepath.Join(str.Path, toDir, packageName)
+	packageFinalPath := filepath.Join(toPackage, packageName)
 	var hasPublicID bool
 
 	// Validate we have a `PublicID` field.
@@ -200,7 +200,7 @@ func HTTPGen(toDir string, an ast.AnnotationDeclaration, str ast.StructDeclarati
 	//			gen.Import("github.com/influx6/faux/metrics", ""),
 	//			gen.Import("github.com/influx6/faux/context", ""),
 	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
-	//			gen.Import(filepath.Join(str.Path, toDir, packageName), "httpapi"),
+	//			gen.Import(filepath.Join(toDir, packageName), "httpapi"),
 	//			gen.Import(str.Path, ""),
 	//		),
 	//		gen.Block(
