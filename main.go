@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 
@@ -63,12 +62,6 @@ func main() {
 				Name:    "dest",
 				Default: "./",
 				Desc:    "relative destination for package",
-				Validation: func(received string) error {
-					if filepath.IsAbs(received) {
-						return errors.New("only relative paths not absolute allowed")
-					}
-					return nil
-				},
 			},
 			&flags.StringFlag{
 				Name:    "target",
