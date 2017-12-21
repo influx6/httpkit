@@ -52,6 +52,30 @@ Success: 201
 {{ mapRandomJSON .Struct "bson" "json" }}
 ```
 
+## INFO /{{.Struct.Object.Name}}/
+### Method: `func (api *HTTPAPI) Info(ctx *httputil.Context) error`
+
+Info returns total of records available in api for type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
+
+- Expected Status Code
+
+```
+Failure: 500
+Success: 200
+```
+
+- Expected Response Body
+
+```http
+    Content-Type: application/json
+```
+
+```json
+{
+    "total": 10,
+}
+```
+
 ## GET /{{.Struct.Object.Name}}/:public_id
 ### Method: `func (api *HTTPAPI) Get(ctx *httputil.Context) error`
 

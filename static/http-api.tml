@@ -2,6 +2,7 @@
 // the given CRUD request for the {{quote .Struct.Object.Name.Name}} type. This is provided by the user.
 // @implement
 type {{.Struct.Object.Name.Name}}Backend interface{
+		Count(context.Context) (int, error)
 		Delete(context.Context, string) error
 		Get(context.Context, string) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error)
 		Update(context.Context, string, {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) error
@@ -12,10 +13,17 @@ type {{.Struct.Object.Name.Name}}Backend interface{
 // {{.Struct.Object.Name.Name}}HTTP defines an interface which expose the methods provided by the http backend.
 type {{.Struct.Object.Name.Name}}HTTP interface{
 	Get(*httputil.Context) error
+	Info(*httputil.Context) error
 	Create(*httputil.Context) error
 	Update(*httputil.Context) error
 	Delete(*httputil.Context) error
 	GetAll(*httputil.Context) error
+}
+
+// {{.Struct.Object.Name.Name}}Info contains meta-data regarding records in db of
+// type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
+type {{.Struct.Object.Name.Name}}Info struct {
+	 Total int `json:"total"`
 }
 
 // {{.Struct.Object.Name.Name}}Records defines a type to represent the response given to a request for
@@ -41,6 +49,49 @@ func New(m metrics.Metrics, backend {{.Struct.Object.Name.Name}}Backend) *HTTPAP
 				metrics: m,
 				operator: backend,
 		}
+}
+
+// Info receives an http request to get record info for all available records of type {{quote .Struct.Object.Name.Name}}.
+//
+// Route: /{Route}/info
+// Method: INFO
+// RESPONSE-BODY: JSON
+func (api *HTTPAPI) Info(ctx *httputil.Context) error {
+	m := metrics.NewTrace()
+	defer api.metrics.Emit(metrics.Info("HTTPAPI.Info"),metrics.WithTrace(m.End()))
+
+    ctx.Header().Set("Content-Type", "application/json")
+
+    api.metrics.Emit(metrics.Info("Info request received"),metrics.WithFields(metrics.Field{
+            "url": ctx.Request().URL.String(),
+    }))
+
+
+    total, err := api.operator.Count(ctx.Context())
+    if err != nil {
+        api.metrics.Emit(metrics.Errorf("Failed to get {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record count"),metrics.WithFields(metrics.Field{
+                "error": err,
+                "url": ctx.Request().URL.String(),
+        }))
+
+        return err
+    }
+
+    if err := ctx.JSON(http.StatusOK, {{.Struct.Package}}.{{.Struct.Object.Name.Name}}Info{Total:total); err != nil {
+        api.metrics.Emit(metrics.Errorf("Failed to get serialized {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record to response writer"), metrics.WithFields(metrics.Field{
+                "error": err,
+                "url": ctx.Request().URL.String(),
+        }))
+
+        return err
+    }
+
+	api.metrics.Emit(metrics.Info("Response Delivered"),metrics.WithFields(metrics.Field{
+		"url":       ctx.Request().URL.String(),
+		"status": http.StatusOK,
+	}))
+
+    return nil
 }
 
 // Create receives an http request to create a new {{quote .Struct.Object.Name.Name}}.
