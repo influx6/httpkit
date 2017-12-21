@@ -58,7 +58,7 @@ func New(m metrics.Metrics, backend {{.Struct.Object.Name.Name}}Backend) *HTTPAP
 // RESPONSE-BODY: JSON
 func (api *HTTPAPI) Info(ctx *httputil.Context) error {
 	m := metrics.NewTrace()
-	defer api.metrics.Emit(metrics.Info("HTTPAPI.Info"),metrics.WithTrace(m.End()))
+	defer api.metrics.Emit(metrics.Info("HTTPAPI.Info"), metrics.WithTrace(m.End()))
 
     ctx.Header().Set("Content-Type", "application/json")
 
@@ -77,7 +77,7 @@ func (api *HTTPAPI) Info(ctx *httputil.Context) error {
         return err
     }
 
-    if err := ctx.JSON(http.StatusOK, {{.Struct.Package}}.{{.Struct.Object.Name.Name}}Info{Total:total); err != nil {
+    if err := ctx.JSON(http.StatusOK, {{.Struct.Package}}.{{.Struct.Object.Name.Name}}Info{Total:total}); err != nil {
         api.metrics.Emit(metrics.Errorf("Failed to get serialized {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record to response writer"), metrics.WithFields(metrics.Field{
                 "error": err,
                 "url": ctx.Request().URL.String(),
