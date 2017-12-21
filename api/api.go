@@ -86,10 +86,10 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			gen.Name(packageName),
 			gen.Imports(
 				gen.Import("fmt", ""),
+				gen.Import("context", ""),
 				gen.Import("net/http", ""),
 				gen.Import("encoding/json", ""),
 				gen.Import("github.com/dimfeld/httptreemux", ""),
-				gen.Import("github.com/influx6/faux/context", ""),
 				gen.Import("github.com/influx6/faux/metrics", ""),
 				gen.Import("github.com/influx6/faux/httputil", ""),
 				gen.Import("github.com/influx6/faux/metrics/custom", ""),

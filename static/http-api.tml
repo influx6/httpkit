@@ -75,7 +75,7 @@ func (api *HTTPAPI) Create(ctx *httputil.Context) error {
 				"url": ctx.Request().URL.String(),
 		}))
 
-		response, err := api.operator.Create(ctx, incoming);
+		response, err := api.operator.Create(ctx.Context(), incoming);
 		if err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to create record"),metrics.WithFields(metrics.Field{
 						"error": err,
@@ -146,7 +146,7 @@ func (api *HTTPAPI) Update(ctx *httputil.Context) error {
 				"public_id": publicID,
 		}))
 
-		if err := api.operator.Update(ctx, publicID, incoming); err != nil {
+		if err := api.operator.Update(ctx.Context(), publicID, incoming); err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to parse params and url.Values"),metrics.WithFields(metrics.Field{
 						"error": err,
 						"public_id": publicID,
@@ -162,7 +162,7 @@ func (api *HTTPAPI) Update(ctx *httputil.Context) error {
 		"status": http.StatusNoContent,
 	}))
 
-		return ctx.NoContent(http.StatusNoContent)
+    return ctx.NoContent(http.StatusNoContent)
 }
 
 // Delete receives an http request to create a new {{quote .Struct.Object.Name.Name}}.
@@ -192,7 +192,7 @@ func (api *HTTPAPI) Delete(ctx *httputil.Context) error {
 				"public_id": publicID,
 		}))
 
-		if err := api.operator.Delete(ctx, publicID); err != nil {
+		if err := api.operator.Delete(ctx.Context(), publicID); err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to delete {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record"),metrics.WithFields(metrics.Field{
 						"error": err,
 						"public_id": publicID,
@@ -235,7 +235,7 @@ func (api *HTTPAPI) Get(ctx *httputil.Context) error {
 		return errors.New("public_id parameter not found")
 	}
 
-		requested, err := api.operator.Get(ctx, publicID)
+		requested, err := api.operator.Get(ctx.Context(), publicID)
 		if err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to get {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record"),metrics.WithFields(metrics.Field{
 						"error": err,
@@ -325,7 +325,7 @@ func (api *HTTPAPI) GetAll(ctx *httputil.Context) error {
 		pageNo = -1
 	}
 
-		requested, total, err := api.operator.GetAll(ctx, order, orderBy, pageNo, responsePerPage)
+		requested, total, err := api.operator.GetAll(ctx.Context(), order, orderBy, pageNo, responsePerPage)
 		if err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to get all {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record"),metrics.WithFields(metrics.Field{
 						"error": err,
@@ -354,5 +354,5 @@ func (api *HTTPAPI) GetAll(ctx *httputil.Context) error {
 		"status": http.StatusOK,
 	}))
 
-		return nil
+    return nil
 }
