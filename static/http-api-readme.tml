@@ -11,9 +11,9 @@ The API expects the user to implement and provide the backend interface to provi
 type Backend interface{
     Delete(context.Context, string) error
     Get(context.Context, string) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error)
-    Update(context.Context, string, {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) error
+    Update(context.Context, string, {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error
     GetAll(context.Context, string, string, int, int) ([]{{.Struct.Package}}.{{.Struct.Object.Name}}, int, error)
-    Create(context.Context, {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error)
+    Create(context.Context, {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error)
 }
 ```
 
@@ -22,7 +22,7 @@ It exposes the following methods for each endpoint:
 ## Create { POST /{{.Struct.Object.Name}}/ }
 ### Method: `func (api *HTTPAPI) Create(ctx *httputil.Context) error`
 
-Create receives the provided record of the {{.CreateAction.Object.Name}} type which is delieved the 
+Create receives the provided record of the {{.CreateAction.Object}} type which is delieved the 
 JSON content to the HTTP API. This will in turn return a respective status code.
 
 - Expected Request Body

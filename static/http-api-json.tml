@@ -3,28 +3,28 @@
 var (
  {{.Struct.Object.Name.Name}}JSON = `{{ mapRandomJSON .Struct "json" "" }}`
 
- {{.Struct.Object.Name.Name}}CreateJSON = `{{ mapRandomJSON .CreateAction "json" "" }}`
+ {{if .CreateAction.IsStruct}}{{.Struct.Object.Name.Name}}CreateJSON = `{{ mapRandomJSON .CreateAction "json" "" }}`{{end}}
 
- {{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapRandomJSON .UpdateAction "json" "" }}`
+ {{if .UpdateAction.IsStruct}}{{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapRandomJSON .UpdateAction "json" "" }}`{{end}}
 )
 
-// LoadCreateJSON returns a new instance of a {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}.
-func LoadCreateJSON(content string) ({{.CreateAction.Package}}.{{.CreateAction.Object.Name}}, error) {
-	var elem {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}
+// LoadCreateJSON returns a new instance of a {{.CreateAction.Package}}.{{.CreateAction.Object}}.
+func LoadCreateJSON(content string) ({{.CreateAction.Package}}.{{.CreateAction.Object}}, error) {
+	var elem {{.CreateAction.Package}}.{{.CreateAction.Object}}
 
 	if err := json.Unmarshal([]byte(content), &elem); err != nil {
-		return {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}{}, err
+		return {{.CreateAction.Package}}.{{.CreateAction.Object}}{}, err
 	}
 
 	return elem, nil
 }
 
-// LoadUpdateJSON returns a new instance of a {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}.
-func LoadUpdateJSON(content string) ({{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}, error) {
-	var elem {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}
+// LoadUpdateJSON returns a new instance of a {{.UpdateAction.Package}}.{{.UpdateAction.Object}}.
+func LoadUpdateJSON(content string) ({{.UpdateAction.Package}}.{{.UpdateAction.Object}}, error) {
+	var elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}
 
 	if err := json.Unmarshal([]byte(content), &elem); err != nil {
-		return {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}{}, err
+		return {{.UpdateAction.Package}}.{{.UpdateAction.Object}}{}, err
 	}
 
 	return elem, nil

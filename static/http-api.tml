@@ -5,9 +5,9 @@ type {{.Struct.Object.Name.Name}}Backend interface{
 		Count(context.Context) (int, error)
 		Delete(context.Context, string) error
 		Get(context.Context, string) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error)
-		Update(context.Context, string, {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) error
+		Update(context.Context, string, {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error
 		GetAll(context.Context, string, string, int, int) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, int, error)
-		Create(context.Context, {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error)
+		Create(context.Context, {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error)
 }
 
 // {{.Struct.Object.Name.Name}}HTTP defines an interface which expose the methods provided by the http backend.
@@ -110,7 +110,7 @@ func (api *HTTPAPI) Create(ctx *httputil.Context) error {
 				"url": ctx.Request().URL.String(),
 		}))
 
-		var incoming {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}
+		var incoming {{.CreateAction.Package}}.{{.CreateAction.Object}}
 
 		if err := json.NewDecoder(ctx.Body()).Decode(&incoming); err != nil {
 				api.metrics.Emit(metrics.Errorf("Failed to parse params and url.Values"),metrics.WithFields(metrics.Field{
@@ -179,7 +179,7 @@ func (api *HTTPAPI) Update(ctx *httputil.Context) error {
 	}
 
 
-		var incoming {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}
+		var incoming {{.UpdateAction.Package}}.{{.UpdateAction.Object}}
 
 		if err := json.NewDecoder(ctx.Body()).Decode(&incoming); err != nil {
 		api.metrics.Emit(metrics.Errorf("Failed to decode request body"),metrics.WithFields(metrics.Field{

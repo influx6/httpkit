@@ -52,7 +52,7 @@ func (m *MockAPIOperator) Get(ctx context.Context, publicID string) ({{.Struct.P
 }
 
 // Update updates a giving record with the given new value.
-func (m *MockAPIOperator) Update(ctx context.Context, publicID string, elem {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) error{
+func (m *MockAPIOperator) Update(ctx context.Context, publicID string, elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error{
 {{ if .UpdateIsSimilar }}
     m.store.Store(publicID, elem)
     return nil
@@ -74,7 +74,7 @@ func (m *MockAPIOperator) Update(ctx context.Context, publicID string, elem {{.U
 }
 
 // Create adds a new record into the giving record store.
-func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
+func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
 {{ if .CreateIsSimilar }}
     m.store.Store(elem.PublicID, elem)
     return elem, nil
@@ -92,7 +92,7 @@ func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Packa
 
 {{ if (not .UpdateIsSimilar) }}
 // update{{.Struct.Object.Name}} updates a exiting {{.Struct.Package}}.{{.Struct.Object.Name}} record with the given update item.
-func Update{{.Struct.Object.Name}}(ctx context.Context, record {{.Struct.Package}}.{{.Struct.Object.Name}}, updater {{.UpdateAction.Package}}.{{.UpdateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
+func Update{{.Struct.Object.Name}}(ctx context.Context, record {{.Struct.Package}}.{{.Struct.Object.Name}}, updater {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
     
     // TODO(developer):
     // Override function contents with what should happen.
@@ -103,7 +103,7 @@ func Update{{.Struct.Object.Name}}(ctx context.Context, record {{.Struct.Package
 
 {{ if (not .CreateIsSimilar) }}
 // create{{.Struct.Object.Name}} creates a new {{.Struct.Package}}.{{.Struct.Object.Name}} record from the given create type.
-func create{{.Struct.Object.Name}}(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object.Name}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error) {
+func create{{.Struct.Object.Name}}(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error) {
 
     // TODO(developer):
     // Override function contents with what should happen.

@@ -13,33 +13,42 @@ import (
 	"github.com/influx6/moz/gen"
 )
 
+// Action defines a type that holds the name of a giving action type.
+type Action struct {
+	Object   string
+	Package  string
+	IsStruct bool
+	Struct   ast.StructDeclaration
+	Type     ast.TypeDeclaration
+}
+
 // HTTPGen generates http crud for giving struct declaration.
 func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDeclaration, pkgDeclr ast.PackageDeclaration, pkg ast.Package) ([]gen.WriteDirective, error) {
-	updateAction := str
-	createAction := str
-
-	//var (
-	//	isSameCreate = true
-	//	isSameUpdate = true
-	//)
+	var updateAction, createAction Action
 
 	if newActionName := an.Param("New"); newActionName != "" {
-		if action, err := ast.FindStructType(pkgDeclr, newActionName); err == nil && action.Declr != nil {
-			//if action.Object != str.Object {
-			//	isSameCreate = false
-			//}
-
-			createAction = action
+		if action, ok := pkg.StructFor(pkgDeclr.Path, newActionName); ok && action.Declr != nil {
+			createAction.Package = action.Package
+			createAction.Object = action.Object.Name.Name
+			createAction.Struct = action
+			createAction.IsStruct = true
+		} else if action, ok := pkg.TypeFor(pkgDeclr.Path, newActionName); ok && action.Declr != nil {
+			createAction.Package = action.Package
+			createAction.Object = action.Object.Name.Name
+			createAction.Type = action
 		}
 	}
 
 	if updateActionName := an.Param("Update"); updateActionName != "" {
-		if action, err := ast.FindStructType(pkgDeclr, updateActionName); err == nil && action.Declr != nil {
-			//if action.Object != str.Object {
-			//	isSameUpdate = false
-			//}
-
-			updateAction = action
+		if action, ok := pkg.StructFor(pkgDeclr.Path, updateActionName); ok && action.Declr != nil {
+			updateAction.Package = action.Package
+			updateAction.Object = action.Object.Name.Name
+			updateAction.Struct = action
+			updateAction.IsStruct = true
+		} else if action, ok := pkg.TypeFor(pkgDeclr.Path, updateActionName); ok && action.Declr != nil {
+			updateAction.Package = action.Package
+			updateAction.Object = action.Object.Name.Name
+			updateAction.Type = action
 		}
 	}
 
@@ -108,8 +117,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 					struct {
 						Pkg          *ast.PackageDeclaration
 						Struct       ast.StructDeclaration
-						CreateAction ast.StructDeclaration
-						UpdateAction ast.StructDeclaration
+						CreateAction Action
+						UpdateAction Action
 					}{
 						Pkg:          &pkgDeclr,
 						Struct:       str,
@@ -135,8 +144,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 				struct {
 					Pkg          *ast.PackageDeclaration
 					Struct       ast.StructDeclaration
-					CreateAction ast.StructDeclaration
-					UpdateAction ast.StructDeclaration
+					CreateAction Action
+					UpdateAction Action
 					PackageName  string
 					PackagePath  string
 				}{
@@ -171,8 +180,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 					struct {
 						Pkg          *ast.PackageDeclaration
 						Struct       ast.StructDeclaration
-						CreateAction ast.StructDeclaration
-						UpdateAction ast.StructDeclaration
+						CreateAction Action
+						UpdateAction Action
 					}{
 						Pkg:          &pkgDeclr,
 						Struct:       str,
@@ -184,109 +193,12 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		),
 	)
 
-	//httpTestGen := gen.Block(
-	//	gen.Package(
-	//		gen.Name(fmt.Sprintf("%s_test", packageName)),
-	//		gen.Imports(
-	//			gen.Import("fmt", ""),
-	//			gen.Import("bytes", ""),
-	//			gen.Import("testing", ""),
-	//			gen.Import("encoding/json", ""),
-	//			gen.Import("net/http", ""),
-	//			gen.Import("net/http/httptest", ""),
-	//			gen.Import("github.com/influx6/faux/httputil", ""),
-	//			gen.Import("github.com/dimfeld/httptreemux", ""),
-	//			gen.Import("github.com/influx6/faux/tests", ""),
-	//			gen.Import("github.com/influx6/faux/metrics", ""),
-	//			gen.Import("github.com/influx6/faux/context", ""),
-	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
-	//			gen.Import(filepath.Join(toDir, packageName), "httpapi"),
-	//			gen.Import(str.Path, ""),
-	//		),
-	//		gen.Block(
-	//			gen.SourceTextWith(
-	//				string(static.MustReadFile("http-api-test.tml", true)),
-	//				template.FuncMap{
-	//					"map":       ast.MapOutFields,
-	//					"mapValues": ast.MapOutValues,
-	//					"hasFunc":   pkgDeclr.HasFunctionFor,
-	//					"randField": ast.RandomFieldAssign,
-	//				},
-	//				struct {
-	//					Pkg          *ast.PackageDeclaration
-	//					Struct       ast.StructDeclaration
-	//					CreateAction ast.StructDeclaration
-	//					UpdateAction ast.StructDeclaration
-	//				}{
-	//					Pkg:          &pkgDeclr,
-	//					Struct:       str,
-	//					CreateAction: createAction,
-	//					UpdateAction: updateAction,
-	//				},
-	//			),
-	//		),
-	//	),
-	//)
-
-	//httpMockGen := gen.Block(
-	//	gen.Package(
-	//		gen.Name("fixtures"),
-	//		gen.Imports(
-	//			gen.Import("errors", ""),
-	//			gen.Import("testing", ""),
-	//			gen.Import("encoding/json", ""),
-	//			gen.Import("golang.org/x/sync/syncmap", ""),
-	//			gen.Import("github.com/influx6/faux/tests", ""),
-	//			gen.Import("github.com/influx6/faux/metrics", ""),
-	//			gen.Import("github.com/influx6/faux/context", ""),
-	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
-	//			gen.Import(str.Path, ""),
-	//		),
-	//		gen.Block(
-	//			gen.SourceTextWith(
-	//				string(static.MustReadFile("http-api-mock.tml", true)),
-	//				template.FuncMap{
-	//					"map":       ast.MapOutFields,
-	//					"mapValues": ast.MapOutValues,
-	//					"hasFunc":   pkgDeclr.HasFunctionFor,
-	//				},
-	//				struct {
-	//					Pkg             *ast.PackageDeclaration
-	//					Struct          ast.StructDeclaration
-	//					CreateAction    ast.StructDeclaration
-	//					UpdateAction    ast.StructDeclaration
-	//					CreateIsSimilar bool
-	//					UpdateIsSimilar bool
-	//				}{
-	//					Pkg:             &pkgDeclr,
-	//					Struct:          str,
-	//					CreateAction:    createAction,
-	//					UpdateAction:    updateAction,
-	//					CreateIsSimilar: isSameCreate,
-	//					UpdateIsSimilar: isSameUpdate,
-	//				},
-	//			),
-	//		),
-	//	),
-	//)
-
 	writers := []gen.WriteDirective{
 		{
 			Writer:   httpReadmeGen,
 			FileName: "readme.md",
 			Dir:      packageName,
 		},
-		//{
-		//	Writer:       fmtwriter.New(httpMockGen, true, true),
-		//	FileName:     fmt.Sprintf("%s_mock_test.go", packageName),
-		//	Dir:          packageName,
-		//	DontOverride: true,
-		//},
-		//{
-		//	Writer:   fmtwriter.New(httpTestGen, true, true),
-		//	FileName: fmt.Sprintf("%s_test.go", packageName),
-		//	Dir:      packageName,
-		//},
 		{
 			Writer:       fmtwriter.New(httpJSONGen, true, true),
 			FileName:     fmt.Sprintf("%s_fixtures.go", packageName),
