@@ -37,10 +37,7 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			createAction.Object = action.Object.Name.Name
 			createAction.Type = action
 		} else {
-			createAction.Package = str.Package
-			createAction.Object = str.Object.Name.Name
-			createAction.Struct = str
-			createAction.IsStruct = true
+			return nil, fmt.Errorf("New type %+q is not found in struct or type declarations", newActionName)
 		}
 	} else {
 		createAction.Package = str.Package
@@ -60,10 +57,7 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			updateAction.Object = action.Object.Name.Name
 			updateAction.Type = action
 		} else {
-			createAction.Package = str.Package
-			createAction.Object = str.Object.Name.Name
-			createAction.Struct = str
-			createAction.IsStruct = true
+			return nil, fmt.Errorf("Update type %+q is not found in struct or type declarations", newActionName)
 		}
 	} else {
 		updateAction.Package = str.Package
