@@ -36,12 +36,12 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			createAction.Package = action.Package
 			createAction.Object = action.Object.Name.Name
 			createAction.Type = action
-		} else {
-			createAction.Package = str.Package
-			createAction.Object = str.Object.Name.Name
-			createAction.Struct = str
-			createAction.IsStruct = true
 		}
+	} else {
+		createAction.Package = str.Package
+		createAction.Object = str.Object.Name.Name
+		createAction.Struct = str
+		createAction.IsStruct = true
 	}
 
 	if updateActionName := an.Param("Update"); updateActionName != "" {
@@ -54,12 +54,12 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			updateAction.Package = action.Package
 			updateAction.Object = action.Object.Name.Name
 			updateAction.Type = action
-		} else {
-			updateAction.Package = str.Package
-			updateAction.Object = str.Object.Name.Name
-			updateAction.Struct = str
-			updateAction.IsStruct = true
 		}
+	} else {
+		updateAction.Package = str.Package
+		updateAction.Object = str.Object.Name.Name
+		updateAction.Struct = str
+		updateAction.IsStruct = true
 	}
 
 	packageName := fmt.Sprintf("%sapi", strings.ToLower(str.Object.Name.Name))
