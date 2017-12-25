@@ -36,6 +36,11 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			createAction.Package = action.Package
 			createAction.Object = action.Object.Name.Name
 			createAction.Type = action
+		} else {
+			createAction.Package = str.Package
+			createAction.Object = str.Object.Name.Name
+			createAction.Struct = str
+			createAction.IsStruct = true
 		}
 	} else {
 		createAction.Package = str.Package
@@ -54,6 +59,11 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			updateAction.Package = action.Package
 			updateAction.Object = action.Object.Name.Name
 			updateAction.Type = action
+		} else {
+			createAction.Package = str.Package
+			createAction.Object = str.Object.Name.Name
+			createAction.Struct = str
+			createAction.IsStruct = true
 		}
 	} else {
 		updateAction.Package = str.Package
