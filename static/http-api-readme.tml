@@ -32,7 +32,7 @@ JSON content to the HTTP API. This will in turn return a respective status code.
 ```
 
 ```json
-{{if .CreateAction.IsStruct}}{{ mapRandomJSON .CreateAction "bson" "json" }}{{else}}{{.CreateAction.Package}}.{{.CreateAction.Object}}{{end}}
+{{if .CreateAction.IsStruct}}{{ mapRandomJSON .CreateAction.Struct "bson" "json" }}{{else}}{{.CreateAction.Package}}.{{.CreateAction.Object}}{{end}}
 ```
 
 - Expected Status Code
@@ -146,7 +146,7 @@ response. It uses the provided `:public_id` parameter as the paramter to identif
 ```
 
 ```json
-{{if .UpdateAction.IsStruct}}{{ mapRandomJSON .UpdateAction "bson" "json" }}{{else}}{{.UpdateAction.Package}}.{{.UpdateAction.Object}}{{end}}
+{{if .UpdateAction.IsStruct}}{{ mapRandomJSON .UpdateAction.Struct "bson" "json" }}{{else}}{{.UpdateAction.Package}}.{{.UpdateAction.Object}}{{end}}
 ```
 
 - Expected Status Code
