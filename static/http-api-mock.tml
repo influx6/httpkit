@@ -1,37 +1,39 @@
 // ErrNotFound is returned when a record is not found.
 var ErrNotFound = errors.New("not found")
 
+var _ httpapi.{{.Struct.Object.Name.Name}}Backend = (*mocker)(nil)
+
 // mocker defines an structure which implements the APIOperator for providing 
 // a mock usage in tests for use with the {{quote .Struct.Object.Name.Name}} http API.
 type mocker struct{
-	store map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name.Name}}
+	db map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}
 }
 
 // newMocker returns a new instance of a mocker.
 func newMocker() *mocker {
     return &mocker{
-        store: map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name.Name}}{},
+        db: map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}{},
     }
 }
 
 // Count provides the operation to remove a giving record identified by ID.
 func (m *mocker) Count(ctx context.Context) (int,error) {
-	return len(m.store), nil
+	return len(m.db), nil
 }
 
 // Delete provides the operation to remove a giving record identified by ID.
 func (m *mocker) Delete(ctx context.Context, publicID string) error {
-	if _, exist := db[publicID]; !exist {
+	if _, exist := m.db[publicID]; !exist {
 		return ErrNotFound
 	}
-	delete(db, publicID)
+	delete(m.db, publicID)
 	return nil
 }
 
 // GetAllByOrder returns a slice of all available record of type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
-func (m *mocker) GetAllByOrder(ctx context.Context, order string, orderBy string) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, int, error) {
+func (m *mocker) GetAllByOrder(ctx context.Context, order string, orderBy string) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error) {
 	var records []{{.Struct.Package}}.{{.Struct.Object.Name.Name}}
-	for _, elem := range db {
+	for _, elem := range m.db {
 		records = append(records, elem)
 	}
 	return records, nil
@@ -40,7 +42,7 @@ func (m *mocker) GetAllByOrder(ctx context.Context, order string, orderBy string
 // GetAll returns a slice of all available record of type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
 func (m *mocker) GetAll(ctx context.Context, order string, orderBy string, page int, responserPerPage int) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, int, error) {
     var records []{{.Struct.Package}}.{{.Struct.Object.Name.Name}}
-    for _, elem := range db {
+    for _, elem := range m.db {
 		records = append(records, elem)
 	}
     return records, len(records), nil
@@ -49,7 +51,7 @@ func (m *mocker) GetAll(ctx context.Context, order string, orderBy string, page 
 // GetByField retrieves a record based on the provided publicID.
 func (m *mocker) GetByField(ctx context.Context, key string, value interface{}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
 	val := fmt.Sprintf("%+s", value)
-	for _, record := range db {
+	for _, record := range m.db {
 		switch strings.ToLower(key) {
 			case "public_id":
 				if record.PublicID == val {
@@ -63,7 +65,7 @@ func (m *mocker) GetByField(ctx context.Context, key string, value interface{}) 
 
 // Get retrieves a record based on the provided publicID.
 func (m *mocker) Get(ctx context.Context, publicID string) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
-	elem, exist := db[publicID]
+	elem, exist := m.db[publicID]
 	if !exist {
 		return elem, ErrNotFound
 	}
@@ -72,39 +74,39 @@ func (m *mocker) Get(ctx context.Context, publicID string) ({{.Struct.Package}}.
 
 // Update updates a giving record with the given new value.
 func (m *mocker) Update(ctx context.Context, publicID string, elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error{
-	if _, exist := db[publicID]; !exist {
+	if _, exist := m.db[publicID]; !exist {
 		return ErrNotFound
 	}
 
-	{{ if .UpdateIsSimilar }}
-		db[publicID] = elem
+	{{ if .UpdateAction.IsSame }}
+		m.db[publicID] = elem
 		return nil
 	{{ else }}
-		old := db[publicID]
+		old := m.db[publicID]
 		newElem, err := update{{.Struct.Object.Name.Name}}(ctx, old, elem)
 		if err != nil {
 			return err
 		}
 
-		db[publicID] = newElem
+		m.db[publicID] = newElem
 		return nil
 	{{ end }}
 }
 
 // Create adds a new record into the giving record store.
 func (m *mocker) Create(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
-	{{ if not .CreateAction.IsSame }}
-		if _, exist := db[elem.PublicID]; exist {
-			return ErrNotFound
+	{{ if .CreateAction.IsSame }}
+		if _, exist := m.db[elem.PublicID]; exist {
+			return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, ErrNotFound
 		}
-		db[elem.PublicID] = elem
+		m.db[elem.PublicID] = elem
 		return elem, nil
 	{{ else }}
 		newElem, err := create{{.Struct.Object.Name.Name}}(ctx, elem)
 		if err != nil {
 			return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, err
 		}
-		db[elem.PublicID] = newElem
+		m.db[newElem.PublicID] = newElem
 		return newElem, nil
 	{{ end }}
 }

@@ -13,7 +13,11 @@ func LoadCreateJSON(content string) ({{.CreateAction.Package}}.{{.CreateAction.O
 	var elem {{.CreateAction.Package}}.{{.CreateAction.Object}}
 
 	if err := json.Unmarshal([]byte(content), &elem); err != nil {
-		return {{.CreateAction.Package}}.{{.CreateAction.Object}}{}, err
+		{{if .CreateAction.IsStruct }}
+			return {{.CreateAction.Package}}.{{.CreateAction.Object}}{}, err
+		{{else}}
+			return (*(*{{.CreateAction.Package}}.{{.CreateAction.Object}})(nil)), err
+		{{end}}
 	}
 
 	return elem, nil
@@ -24,7 +28,11 @@ func LoadUpdateJSON(content string) ({{.UpdateAction.Package}}.{{.UpdateAction.O
 	var elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}
 
 	if err := json.Unmarshal([]byte(content), &elem); err != nil {
-		return {{.UpdateAction.Package}}.{{.UpdateAction.Object}}{}, err
+		{{if .UpdateAction.IsStruct }}
+			return {{.UpdateAction.Package}}.{{.UpdateAction.Object}}{}, err
+		{{else}}
+		return (*(*{{.UpdateAction.Package}}.{{.UpdateAction.Object}})(nil)), err
+		{{end}}
 	}
 
 	return elem, nil

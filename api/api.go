@@ -71,6 +71,7 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 
 	packageName := fmt.Sprintf("%sapi", strings.ToLower(str.Object.Name.Name))
 	packageFinalPath := filepath.Join(toPackage, packageName)
+	packageFixturesFinalPath := filepath.Join(toPackage, packageName, "fixtures")
 	var hasPublicID bool
 
 	// Validate we have a `PublicID` field.
@@ -115,10 +116,12 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 				gen.Import("github.com/influx6/faux/tests", ""),
 				gen.Import("github.com/influx6/faux/metrics", ""),
 				gen.Import("github.com/influx6/faux/metrics/custom", ""),
+				gen.Import(packageFinalPath, "httpapi"),
 				gen.Import(str.Path, ""),
 			),
 			gen.Block(
-				gen.SourceTextWith(
+				gen.SourceTextWithName(
+					"http-mock-template",
 					string(static.MustReadFile("http-api-mock.tml", true)),
 					gen.ToTemplateFuncs(
 						ast.ASTTemplatFuncs,
@@ -163,7 +166,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 				gen.Import(str.Path, ""),
 			),
 			gen.Block(
-				gen.SourceTextWith(
+				gen.SourceTextWithName(
+					"http-api-template",
 					string(static.MustReadFile("http-api.tml", true)),
 					gen.ToTemplateFuncs(
 						ast.ASTTemplatFuncs,
@@ -205,10 +209,12 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 				gen.Import("github.com/influx6/faux/httputil/httptesting", ""),
 				gen.Import("github.com/influx6/faux/metrics/custom", ""),
 				gen.Import(packageFinalPath, "httpapi"),
+				gen.Import(packageFixturesFinalPath, ""),
 				gen.Import(str.Path, ""),
 			),
 			gen.Block(
-				gen.SourceTextWith(
+				gen.SourceTextWithName(
+					"http-test-template",
 					string(static.MustReadFile("http-api-test.tml", true)),
 					gen.ToTemplateFuncs(
 						ast.ASTTemplatFuncs,
@@ -238,7 +244,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 
 	httpReadmeGen := gen.Block(
 		gen.Block(
-			gen.SourceTextWith(
+			gen.SourceTextWithName(
+				"http-readme-template",
 				string(static.MustReadFile("http-api-readme.tml", true)),
 				gen.ToTemplateFuncs(
 					ast.ASTTemplatFuncs,
@@ -277,7 +284,8 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 				gen.Import(str.Path, ""),
 			),
 			gen.Block(
-				gen.SourceTextWith(
+				gen.SourceTextWithName(
+					"http-json-template",
 					string(static.MustReadFile("http-api-json.tml", true)),
 					gen.ToTemplateFuncs(
 						ast.ASTTemplatFuncs,
