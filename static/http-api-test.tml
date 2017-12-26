@@ -1,0 +1,8 @@
+
+func Test{{.Struct.Object.Name.Name}}API(t *testing.T){
+	// not yet implemented.
+}
+
+
+
+
