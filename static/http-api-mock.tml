@@ -1,113 +1,128 @@
-// MockAPIOperator defines an structure which implements the APIOperator for providing 
-// a mock usage in tests for use with the {{quote .Struct.Object.Name}} http API.
-type MockAPIOperator struct{
-    store *syncmap.Map
+// ErrNotFound is returned when a record is not found.
+var ErrNotFound = errors.New("not found")
+
+// mocker defines an structure which implements the APIOperator for providing 
+// a mock usage in tests for use with the {{quote .Struct.Object.Name.Name}} http API.
+type mocker struct{
+	store map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name.Name}}
 }
 
-// NewMockAPIOperator returns a new instance of a MockAPIOperator.
-func NewMockAPIOperator() *MockAPIOperator {
-    return &MockAPIOperator{
-        store: new(syncmap.Map),
+// newMocker returns a new instance of a mocker.
+func newMocker() *mocker {
+    return &mocker{
+        store: map[string]{{.Struct.Package}}.{{.Struct.Object.Name.Name.Name}}{},
     }
+}
+
+// Count provides the operation to remove a giving record identified by ID.
+func (m *mocker) Count(ctx context.Context) (int,error) {
+	return len(m.store), nil
 }
 
 // Delete provides the operation to remove a giving record identified by ID.
-func (m *MockAPIOperator) Delete(ctx context.Context, publicID string) error {
-    if _, has := m.store.Load(publicID); !has {
-        return fmt.Errorf("Record does not exists with id %q", publicID)
-    }
-
-    m.store.Delete(publicID)
-    return nil
+func (m *mocker) Delete(ctx context.Context, publicID string) error {
+	if _, exist := db[publicID]; !exist {
+		return ErrNotFound
+	}
+	delete(db, publicID)
+	return nil
 }
 
-// GetAll returns a slice of all available record of type {{.Struct.Package}}.{{.Struct.Object.Name}}.
-func (m *MockAPIOperator) GetAll(ctx context.Context, order string, orderBy string, page int, responserPerPage int) ([]{{.Struct.Package}}.{{.Struct.Object.Name}}, int, error) {
-    var records []{{.Struct.Package}}.{{.Struct.Object.Name}}
+// GetAllByOrder returns a slice of all available record of type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
+func (m *mocker) GetAllByOrder(ctx context.Context, order string, orderBy string) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, int, error) {
+	var records []{{.Struct.Package}}.{{.Struct.Object.Name.Name}}
+	for _, elem := range db {
+		records = append(records, elem)
+	}
+	return records, nil
+}
 
-    m.store.Range(func(k, v interface{}) bool {
-        if elem, ok := v.({{.Struct.Package}}.{{.Struct.Object.Name}}); ok {
-            records = append(records, elem)
-        }
-
-        return true
-    })
-
+// GetAll returns a slice of all available record of type {{.Struct.Package}}.{{.Struct.Object.Name.Name}}.
+func (m *mocker) GetAll(ctx context.Context, order string, orderBy string, page int, responserPerPage int) ([]{{.Struct.Package}}.{{.Struct.Object.Name.Name}}, int, error) {
+    var records []{{.Struct.Package}}.{{.Struct.Object.Name.Name}}
+    for _, elem := range db {
+		records = append(records, elem)
+	}
     return records, len(records), nil
 }
 
+// GetByField retrieves a record based on the provided publicID.
+func (m *mocker) GetByField(ctx context.Context, key string, value interface{}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
+	val := fmt.Sprintf("%+s", value)
+	for _, record := range db {
+		switch strings.ToLower(key) {
+			case "public_id":
+				if record.PublicID == val {
+					return record, nil
+				}
+		}
+	}
+
+	return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, ErrNotFound
+}
+
 // Get retrieves a record based on the provided publicID.
-func (m *MockAPIOperator) Get(ctx context.Context, publicID string) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
-    elem, found := m.store.Load(publicID)
-    if !found{
-        return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, fmt.Errorf("Record does not exists with id %q", publicID)
-    }
-
-    rElem, ok := elem.({{.Struct.Package}}.{{.Struct.Object.Name}})
-    if !ok {
-        return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, errors.New("Record does not match type")
-    }
-
-    return rElem, nil
+func (m *mocker) Get(ctx context.Context, publicID string) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
+	elem, exist := db[publicID]
+	if !exist {
+		return elem, ErrNotFound
+	}
+	return elem, nil
 }
 
 // Update updates a giving record with the given new value.
-func (m *MockAPIOperator) Update(ctx context.Context, publicID string, elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error{
-{{ if .UpdateIsSimilar }}
-    m.store.Store(publicID, elem)
-    return nil
-{{ else }}
-    nowElem, ok := m.store.Load(publicID).({{.Struct.Package}}.{{.Struct.Object.Name}}) 
-    if !ok {
-        return errors.New("Not found/invalid type")
-    }
-    
-    newElem, err := update{{.Struct.Object.Name}}(ctx, nowElem, elem)
-    if err != nil {
-        return err
-    }
+func (m *mocker) Update(ctx context.Context, publicID string, elem {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) error{
+	if _, exist := db[publicID]; !exist {
+		return ErrNotFound
+	}
 
-    m.store.Store(newElem.PublicID, newElem)
+	{{ if .UpdateIsSimilar }}
+		db[publicID] = elem
+		return nil
+	{{ else }}
+		old := db[publicID]
+		newElem, err := update{{.Struct.Object.Name.Name}}(ctx, old, elem)
+		if err != nil {
+			return err
+		}
 
-    return nil
-{{ end }}
+		db[publicID] = newElem
+		return nil
+	{{ end }}
 }
 
 // Create adds a new record into the giving record store.
-func (m *MockAPIOperator) Create(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
-{{ if .CreateIsSimilar }}
-    m.store.Store(elem.PublicID, elem)
-    return elem, nil
-{{ else }}
-    newElem, err := create{{.Struct.Object.Name}}(ctx, elem)
-    if err != nil {
-        return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, err
-    }
-
-    m.store.Store(newElem.PublicID, newElem)
-
-    return newElem, nil
-{{ end }}
+func (m *mocker) Create(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
+	{{ if not .CreateAction.IsSame }}
+		if _, exist := db[elem.PublicID]; exist {
+			return ErrNotFound
+		}
+		db[elem.PublicID] = elem
+		return elem, nil
+	{{ else }}
+		newElem, err := create{{.Struct.Object.Name.Name}}(ctx, elem)
+		if err != nil {
+			return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, err
+		}
+		db[elem.PublicID] = newElem
+		return newElem, nil
+	{{ end }}
 }
 
-{{ if (not .UpdateIsSimilar) }}
-// update{{.Struct.Object.Name}} updates a exiting {{.Struct.Package}}.{{.Struct.Object.Name}} record with the given update item.
-func Update{{.Struct.Object.Name}}(ctx context.Context, record {{.Struct.Package}}.{{.Struct.Object.Name}}, updater {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error){
-    
-    // TODO(developer):
-    // Override function contents with what should happen.
-
-    return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, errors.New("Not Implemented")
+{{ if (not .UpdateAction.IsSame) }}
+// update{{.Struct.Object.Name.Name}} updates a exiting {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record with the given update item.
+func Update{{.Struct.Object.Name.Name}}(ctx context.Context, record {{.Struct.Package}}.{{.Struct.Object.Name.Name}}, updater {{.UpdateAction.Package}}.{{.UpdateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error){
+	// TODO(developer):
+	// Override function contents with what should happen.
+	return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, errors.New("Not Implemented")
 }
 {{end}}
 
-{{ if (not .CreateIsSimilar) }}
-// create{{.Struct.Object.Name}} creates a new {{.Struct.Package}}.{{.Struct.Object.Name}} record from the given create type.
-func create{{.Struct.Object.Name}}(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name}}, error) {
-
-    // TODO(developer):
-    // Override function contents with what should happen.
-
-    return {{.Struct.Package}}.{{.Struct.Object.Name}}{}, errors.New("Not Implemented")
+{{ if (not .CreateAction.IsSame) }}
+// create{{.Struct.Object.Name.Name}} creates a new {{.Struct.Package}}.{{.Struct.Object.Name.Name}} record from the given create type.
+func create{{.Struct.Object.Name.Name}}(ctx context.Context, elem {{.CreateAction.Package}}.{{.CreateAction.Object}}) ({{.Struct.Package}}.{{.Struct.Object.Name.Name}}, error) {
+	// TODO(developer):
+	// Override function contents with what should happen.
+	return {{.Struct.Package}}.{{.Struct.Object.Name.Name}}{}, errors.New("Not Implemented")
 }
 {{end}}

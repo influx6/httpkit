@@ -1,8 +1,42 @@
 
 func Test{{.Struct.Object.Name.Name}}API(t *testing.T){
-	// not yet implemented.
+	logs := metrics.New()
+	if testing.Verbose{
+		logs = metrics.New(custom.StackDisplay(os.Stdout))
+	}
+
+	backend := newMock()
+	api := httpapi.New(logs, backend)
+
+	testCreate(t, api, backend)
+	testInfo(t, api, backend)
+	testGet(t, api, backend)
+	testGetAll(t, api, backend)
+	testUpdate(t, api, backend)
+	testDelete(t, api, backend)
 }
 
+func testCreate(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
 
+}
 
+func testInfo(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
+
+}
+
+func testGetAll(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
+
+}
+
+func testGet(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
+
+}
+
+func testUpdate(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
+
+}
+
+func testDelete(t *testing.T, api httpapi.{{.Struct.Object.Name.Name}}HTTP, backend httpapi.{{.Struct.Object.Name.Name}}Backend){
+
+}
 

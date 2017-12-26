@@ -18,6 +18,7 @@ type Action struct {
 	Object   string
 	Package  string
 	IsStruct bool
+	IsSame   bool
 	Struct   ast.StructDeclaration
 	Type     ast.TypeDeclaration
 }
@@ -44,6 +45,7 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		createAction.Object = str.Object.Name.Name
 		createAction.Struct = str
 		createAction.IsStruct = true
+		createAction.IsSame = true
 	}
 
 	if updateActionName := an.Param("Update"); updateActionName != "" {
@@ -64,6 +66,7 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		updateAction.Object = str.Object.Name.Name
 		updateAction.Struct = str
 		updateAction.IsStruct = true
+		updateAction.IsSame = true
 	}
 
 	packageName := fmt.Sprintf("%sapi", strings.ToLower(str.Object.Name.Name))
@@ -101,6 +104,48 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		`, str.Object.Name.Name)
 	}
 
+	httpMockGen := gen.Block(
+		gen.Package(
+			gen.Name(fmt.Sprintf("%s_test", packageName)),
+			gen.Imports(
+				gen.Import("errors", ""),
+				gen.Import("testing", ""),
+				gen.Import("context", ""),
+				gen.Import("encoding/json", ""),
+				gen.Import("github.com/influx6/faux/tests", ""),
+				gen.Import("github.com/influx6/faux/metrics", ""),
+				gen.Import("github.com/influx6/faux/metrics/custom", ""),
+				gen.Import(str.Path, ""),
+			),
+			gen.Block(
+				gen.SourceTextWith(
+					string(static.MustReadFile("http-api-mock.tml", true)),
+					gen.ToTemplateFuncs(
+						ast.ASTTemplatFuncs,
+						template.FuncMap{
+							"map":           ast.MapOutFields,
+							"mapValues":     ast.MapOutValues,
+							"mapJSON":       ast.MapOutFieldsToJSON,
+							"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+							"hasFunc":       pkgDeclr.HasFunctionFor,
+						},
+					),
+					struct {
+						Pkg          *ast.PackageDeclaration
+						Struct       ast.StructDeclaration
+						CreateAction Action
+						UpdateAction Action
+					}{
+						Pkg:          &pkgDeclr,
+						Struct:       str,
+						CreateAction: createAction,
+						UpdateAction: updateAction,
+					},
+				),
+			),
+		),
+	)
+
 	httpGen := gen.Block(
 		gen.Commentary(
 			gen.SourceText(`Package `+packageName+` provides a auto-generated package which contains a http restful CRUD API for the specific {{.Object.Name}} struct in package {{.Package}}.`, str),
@@ -120,6 +165,51 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			gen.Block(
 				gen.SourceTextWith(
 					string(static.MustReadFile("http-api.tml", true)),
+					gen.ToTemplateFuncs(
+						ast.ASTTemplatFuncs,
+						template.FuncMap{
+							"map":           ast.MapOutFields,
+							"mapValues":     ast.MapOutValues,
+							"mapJSON":       ast.MapOutFieldsToJSON,
+							"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+							"hasFunc":       pkgDeclr.HasFunctionFor,
+						},
+					),
+					struct {
+						Pkg          *ast.PackageDeclaration
+						Struct       ast.StructDeclaration
+						CreateAction Action
+						UpdateAction Action
+					}{
+						Pkg:          &pkgDeclr,
+						Struct:       str,
+						CreateAction: createAction,
+						UpdateAction: updateAction,
+					},
+				),
+			),
+		),
+	)
+
+	httpTestGen := gen.Block(
+		gen.Package(
+			gen.Name(fmt.Sprintf("%s_test", packageName)),
+			gen.Imports(
+				gen.Import("fmt", ""),
+				gen.Import("bytes", ""),
+				gen.Import("testing", ""),
+				gen.Import("encoding/json", ""),
+				gen.Import("github.com/influx6/faux/tests", ""),
+				gen.Import("github.com/influx6/faux/metrics", ""),
+				gen.Import("github.com/influx6/faux/httputil", ""),
+				gen.Import("github.com/influx6/faux/httputil/httptesting", ""),
+				gen.Import("github.com/influx6/faux/metrics/custom", ""),
+				gen.Import(packageFinalPath, "httpapi"),
+				gen.Import(str.Path, ""),
+			),
+			gen.Block(
+				gen.SourceTextWith(
+					string(static.MustReadFile("http-api-test.tml", true)),
 					gen.ToTemplateFuncs(
 						ast.ASTTemplatFuncs,
 						template.FuncMap{
@@ -230,6 +320,17 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		{
 			Writer:   fmtwriter.New(httpGen, true, true),
 			FileName: fmt.Sprintf("%s.go", packageName),
+			Dir:      packageName,
+		},
+		{
+			Writer:       fmtwriter.New(httpMockGen, true, true),
+			FileName:     fmt.Sprintf("%s_mock_test.go", packageName),
+			Dir:          packageName,
+			DontOverride: true,
+		},
+		{
+			Writer:   fmtwriter.New(httpTestGen, true, true),
+			FileName: fmt.Sprintf("%s_test.go", packageName),
 			Dir:      packageName,
 		},
 	}, nil
