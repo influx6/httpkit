@@ -3,9 +3,9 @@
 var (
  {{.Struct.Object.Name.Name}}JSON = `{{ mapRandomJSON .Struct "json" "" }}`
 
- {{if .CreateAction.IsStruct}}{{.Struct.Object.Name.Name}}CreateJSON = `{{ mapRandomJSON .CreateAction.Struct "json" "" }}`{{end}}
+ {{if .CreateAction.IsStruct}}{{.Struct.Object.Name.Name}}CreateJSON = `{{ mapRandomJSON .CreateAction.Struct "json" "" }}`{{else}}`{{ mapRandomTypeJSON .CreateAction.Type "json" "" }}`{{end}}
 
- {{if .UpdateAction.IsStruct}}{{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapRandomJSON .UpdateAction.Struct "json" "" }}`{{end}}
+{{if .UpdateAction.IsStruct}}{{.Struct.Object.Name.Name}}UpdateJSON = `{{ mapRandomJSON .UpdateAction.Struct "json" "" }}`{{else}}`{{ mapRandomTypeJSON .UpdateAction.Type "json" "" }}`{{end}}
 )
 
 // LoadCreateJSON returns a new instance of a {{.CreateAction.Package}}.{{.CreateAction.Object}}.
