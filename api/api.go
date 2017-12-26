@@ -120,13 +120,16 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			gen.Block(
 				gen.SourceTextWith(
 					string(static.MustReadFile("http-api.tml", true)),
-					template.FuncMap{
-						"map":           ast.MapOutFields,
-						"mapValues":     ast.MapOutValues,
-						"mapJSON":       ast.MapOutFieldsToJSON,
-						"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
-						"hasFunc":       pkgDeclr.HasFunctionFor,
-					},
+					gen.ToTemplateFuncs(
+						ast.ASTTemplatFuncs,
+						template.FuncMap{
+							"map":           ast.MapOutFields,
+							"mapValues":     ast.MapOutValues,
+							"mapJSON":       ast.MapOutFieldsToJSON,
+							"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+							"hasFunc":       pkgDeclr.HasFunctionFor,
+						},
+					),
 					struct {
 						Pkg          *ast.PackageDeclaration
 						Struct       ast.StructDeclaration
@@ -143,56 +146,20 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 		),
 	)
 
-	//httpTestGen := gen.Block(
-	//	gen.Package(
-	//		gen.Name(fmt.Sprintf("%s_test", packageName)),
-	//		gen.Imports(
-	//			gen.Import("fmt", ""),
-	//			gen.Import("context", ""),
-	//			gen.Import("net/http", ""),
-	//			gen.Import("encoding/json", ""),
-	//			gen.Import("github.com/influx6/faux/metrics", ""),
-	//			gen.Import("github.com/influx6/faux/httputil", ""),
-	//			gen.Import("github.com/influx6/faux/metrics/custom", ""),
-	//			gen.Import(str.Path, ""),
-	//		),
-	//		gen.Block(
-	//			gen.SourceTextWith(
-	//				string(static.MustReadFile("http-api-test.tml", true)),
-	//				template.FuncMap{
-	//					"map":           ast.MapOutFields,
-	//					"mapValues":     ast.MapOutValues,
-	//					"mapJSON":       ast.MapOutFieldsToJSON,
-	//					"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
-	//					"hasFunc":       pkgDeclr.HasFunctionFor,
-	//				},
-	//				struct {
-	//					Pkg          *ast.PackageDeclaration
-	//					Struct       ast.StructDeclaration
-	//					CreateAction Action
-	//					UpdateAction Action
-	//				}{
-	//					Pkg:          &pkgDeclr,
-	//					Struct:       str,
-	//					CreateAction: createAction,
-	//					UpdateAction: updateAction,
-	//				},
-	//			),
-	//		),
-	//	),
-	//)
-
 	httpReadmeGen := gen.Block(
 		gen.Block(
 			gen.SourceTextWith(
 				string(static.MustReadFile("http-api-readme.tml", true)),
-				template.FuncMap{
-					"map":           ast.MapOutFields,
-					"mapValues":     ast.MapOutValues,
-					"mapJSON":       ast.MapOutFieldsToJSON,
-					"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
-					"hasFunc":       pkgDeclr.HasFunctionFor,
-				},
+				gen.ToTemplateFuncs(
+					ast.ASTTemplatFuncs,
+					template.FuncMap{
+						"map":           ast.MapOutFields,
+						"mapValues":     ast.MapOutValues,
+						"mapJSON":       ast.MapOutFieldsToJSON,
+						"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+						"hasFunc":       pkgDeclr.HasFunctionFor,
+					},
+				),
 				struct {
 					Pkg          *ast.PackageDeclaration
 					Struct       ast.StructDeclaration
@@ -222,13 +189,16 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			gen.Block(
 				gen.SourceTextWith(
 					string(static.MustReadFile("http-api-json.tml", true)),
-					template.FuncMap{
-						"map":           ast.MapOutFields,
-						"mapValues":     ast.MapOutValues,
-						"mapJSON":       ast.MapOutFieldsToJSON,
-						"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
-						"hasFunc":       pkgDeclr.HasFunctionFor,
-					},
+					gen.ToTemplateFuncs(
+						ast.ASTTemplatFuncs,
+						template.FuncMap{
+							"map":           ast.MapOutFields,
+							"mapValues":     ast.MapOutValues,
+							"mapJSON":       ast.MapOutFieldsToJSON,
+							"mapRandomJSON": ast.MapOutFieldsWithRandomValuesToJSON,
+							"hasFunc":       pkgDeclr.HasFunctionFor,
+						},
+					),
 					struct {
 						Pkg          *ast.PackageDeclaration
 						Struct       ast.StructDeclaration
@@ -262,10 +232,5 @@ func HTTPGen(toPackage string, an ast.AnnotationDeclaration, str ast.StructDecla
 			FileName: fmt.Sprintf("%s.go", packageName),
 			Dir:      packageName,
 		},
-		//{
-		//	Writer:   fmtwriter.New(httpTestGen, true, true),
-		//	FileName: fmt.Sprintf("%s_test.go", packageName),
-		//	Dir:      packageName,
-		//},
 	}, nil
 }
