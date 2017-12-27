@@ -50,7 +50,7 @@ type HTTPAPI struct{
 // New returns a new HTTPAPI instance using the provided operator and
 // metric.
 func New(m metrics.Metrics, backend {{.Struct.Object.Name.Name}}Backend) HTTPAPI {
-		return &HTTPAPI{
+		return HTTPAPI{
 				metrics: m,
 				operator: backend,
 		}
