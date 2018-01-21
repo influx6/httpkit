@@ -1,6 +1,6 @@
 // {{.Struct.Object.Name.Name}}Backend defines an interface which allows the HTTPAPI to divert the final operation of
 // the given CRUD request for the {{quote .Struct.Object.Name.Name}} type. This is provided by the user.
-// @implement
+// @implement_mock
 type {{.Struct.Object.Name.Name}}Backend interface{
 		Count(context.Context) (int, error)
 		Delete(context.Context, string) error
