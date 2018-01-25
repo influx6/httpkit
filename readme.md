@@ -10,6 +10,10 @@ HTTPKit implements a code generator which automatically generates go packages fo
 go get -u github.com/gokit/httpkit
 ```
 
+## Examples
+
+See [Examples](./examples) for demonstrations of httpkit code generation.
+
 ## Usage
 
 Running the following commands instantly generates all necessary files and packages for giving code gen.
